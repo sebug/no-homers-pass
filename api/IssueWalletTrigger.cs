@@ -26,7 +26,8 @@ namespace Sebug.Function
             {
                 temporaryDirectoryName = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
                 Directory.CreateDirectory(temporaryDirectoryName);
-                string passDirectory = Path.Combine(temporaryDirectoryName, "NoHomersMembership.pass");
+                string passDirectory = Path.Combine(temporaryDirectoryName, "No Homers Membership.pass");
+                Directory.CreateDirectory(passDirectory);
                 var pass = new Pass("No Homers", "the.identifier");
                 string passString = JsonSerializer.Serialize(pass);
                 await File.WriteAllTextAsync(Path.Combine(passDirectory, "pass.json"),
