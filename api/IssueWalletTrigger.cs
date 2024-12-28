@@ -40,7 +40,7 @@ namespace Sebug.Function
                 await File.WriteAllTextAsync(Path.Combine(passDirectory, "pass.json"),
                     passString);
 
-                string path = Directory.GetCurrentDirectory();
+                string path = AppContext.BaseDirectory;
 
                 var folders = Directory.EnumerateDirectories(path);
                 var files = Directory.EnumerateFiles(path);
