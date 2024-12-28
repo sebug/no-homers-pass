@@ -37,6 +37,20 @@ namespace Sebug.Function
                 string passString = JsonSerializer.Serialize(pass);
                 await File.WriteAllTextAsync(Path.Combine(passDirectory, "pass.json"),
                     passString);
+
+                var assy = typeof(IssueWalletTrigger).Assembly;
+                var logoStream = assy.GetManifestResourceStream("logo_full.png");
+
+                if (logoStream == null)
+                {
+                    throw new Exception("Did not find included file logo_full.png");
+                }
+
+                using (var logoFs = File.Create(Path.Combine(passDirectory, "logo_full.png")))
+                {
+                    await logoStream.CopyToAsync(logoFs);
+                }
+
                 var memoryStream = new MemoryStream();
                 ZipFile.CreateFromDirectory(temporaryDirectoryName, memoryStream); // in memory is fine, it's gonna be super small
                 return new FileContentResult(memoryStream.ToArray(),
