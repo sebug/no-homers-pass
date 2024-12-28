@@ -28,8 +28,12 @@ namespace Sebug.Function
                 temporaryDirectoryName = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
                 Directory.CreateDirectory(temporaryDirectoryName);
                 string passDirectory = Path.Combine(temporaryDirectoryName, "No Homers Membership.pass");
+
+                string passTypeIdentifier = Environment.GetEnvironmentVariable("PASS_TYPE_ID") ??
+                    throw new Exception("PASS_TYPE_ID environment variable not defined");
+
                 Directory.CreateDirectory(passDirectory);
-                var pass = new Pass("No Homers", "the.identifier");
+                var pass = new Pass("No Homers", passTypeIdentifier);
                 string passString = JsonSerializer.Serialize(pass);
                 await File.WriteAllTextAsync(Path.Combine(passDirectory, "pass.json"),
                     passString);
