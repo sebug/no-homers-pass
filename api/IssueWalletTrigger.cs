@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Sebug.Function.Models;
 
 namespace Sebug.Function
@@ -18,7 +19,8 @@ namespace Sebug.Function
         }
 
         [Function("IssueWalletTrigger")]
-        public async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Function, "post")] HttpRequest req)
+        public async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Function, "post")] HttpRequest req,
+            FunctionContext context)
         {
             _logger.LogInformation("C# HTTP trigger function processed a request.");
             string firstName = req.Form["first_name"].FirstOrDefault() ?? String.Empty;
@@ -38,18 +40,9 @@ namespace Sebug.Function
                 await File.WriteAllTextAsync(Path.Combine(passDirectory, "pass.json"),
                     passString);
 
-                var assy = typeof(IssueWalletTrigger).Assembly;
-                var logoStream = assy.GetManifestResourceStream("logo_full.png");
+                string path = Directory.GetCurrentDirectory();
 
-                if (logoStream == null)
-                {
-                    throw new Exception("Did not find included file logo_full.png");
-                }
-
-                using (var logoFs = File.Create(Path.Combine(passDirectory, "logo_full.png")))
-                {
-                    await logoStream.CopyToAsync(logoFs);
-                }
+                return new BadRequestObjectResult("Current directory: " + path);
 
                 var memoryStream = new MemoryStream();
                 ZipFile.CreateFromDirectory(temporaryDirectoryName, memoryStream); // in memory is fine, it's gonna be super small
