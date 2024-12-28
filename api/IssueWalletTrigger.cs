@@ -40,14 +40,10 @@ namespace Sebug.Function
                 await File.WriteAllTextAsync(Path.Combine(passDirectory, "pass.json"),
                     passString);
 
-                string path = AppContext.BaseDirectory;
+                string currentDirectory = Directory.GetCurrentDirectory();
 
-                var folders = Directory.EnumerateDirectories(path);
-                var files = Directory.EnumerateFiles(path);
-
-                return new BadRequestObjectResult("Current directory: " + path + ", folders " +
-                String.Join(", ", folders) + " and files: " +
-                String.Join(", ", files));
+                File.Copy(Path.Combine(currentDirectory, "logo_full.png"),
+                Path.Combine(passDirectory, "logo_full.png"));
 
                 var memoryStream = new MemoryStream();
                 ZipFile.CreateFromDirectory(temporaryDirectoryName, memoryStream); // in memory is fine, it's gonna be super small
