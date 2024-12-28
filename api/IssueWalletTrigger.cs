@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Logging;
+using Sebug.Function.Models;
 
 namespace Sebug.Function
 {
@@ -52,11 +53,5 @@ namespace Sebug.Function
                 }
             }
         }
-    }
-
-    public record Pass(string organizationName,
-    string passTypeIdentifier)
-    {
-        
     }
 }
