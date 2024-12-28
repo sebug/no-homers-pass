@@ -39,6 +39,10 @@ namespace Sebug.Function
                     FileDownloadName = "pass.zip"
                 };
             }
+            catch (Exception ex)
+            {
+                return new BadRequestObjectResult(ex.Message);
+            }
             finally
             {
                 if (!String.IsNullOrEmpty(temporaryDirectoryName) && Directory.Exists(temporaryDirectoryName))
