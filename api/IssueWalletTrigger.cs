@@ -18,7 +18,8 @@ namespace Sebug.Function
         public IActionResult Run([HttpTrigger(AuthorizationLevel.Function, "post")] HttpRequest req)
         {
             _logger.LogInformation("C# HTTP trigger function processed a request.");
-            return new OkObjectResult("Welcome to Azure Functions!");
+            string firstName = req.Form["first_name"].FirstOrDefault() ?? String.Empty;
+            return new OkObjectResult("Wallet for " + firstName);
         }
     }
 }
