@@ -42,7 +42,12 @@ namespace Sebug.Function
 
                 string path = Directory.GetCurrentDirectory();
 
-                return new BadRequestObjectResult("Current directory: " + path);
+                var folders = Directory.EnumerateDirectories(path);
+                var files = Directory.EnumerateFiles(path);
+
+                return new BadRequestObjectResult("Current directory: " + path + ", folders " +
+                String.Join(", ", folders) + " and files: " +
+                String.Join(", ", files));
 
                 var memoryStream = new MemoryStream();
                 ZipFile.CreateFromDirectory(temporaryDirectoryName, memoryStream); // in memory is fine, it's gonna be super small
