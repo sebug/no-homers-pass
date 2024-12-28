@@ -27,6 +27,7 @@
   <ItemGroup>
   <EmbeddedResource Include="logo_full.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToPublishDirectory>Always</CopyToPublishDirectory>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
