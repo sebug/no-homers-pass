@@ -43,7 +43,17 @@ namespace Sebug.Function
                 string currentDirectory = Directory.GetCurrentDirectory();
 
                 File.Copy(Path.Combine(currentDirectory, "logo_full.png"),
-                Path.Combine(passDirectory, "logo_full.png"));
+                Path.Combine(passDirectory, "icon.png"));
+                File.Copy(Path.Combine(currentDirectory, "logo_full.png"),
+                Path.Combine(passDirectory, "icon@2x.png"));
+                File.Copy(Path.Combine(currentDirectory, "logo_full.png"),
+                Path.Combine(passDirectory, "icon@3x.png"));
+                File.Copy(Path.Combine(currentDirectory, "logo_full.png"),
+                Path.Combine(passDirectory, "logo.png"));
+                File.Copy(Path.Combine(currentDirectory, "logo_full.png"),
+                Path.Combine(passDirectory, "logo@2x.png"));
+                File.Copy(Path.Combine(currentDirectory, "logo_full.png"),
+                Path.Combine(passDirectory, "logo@3x.png"));
 
                 var memoryStream = new MemoryStream();
                 ZipFile.CreateFromDirectory(temporaryDirectoryName, memoryStream, CompressionLevel.Optimal, false); // in memory is fine, it's gonna be super small
