@@ -23,7 +23,9 @@ namespace Sebug.Function
             FunctionContext context)
         {
             _logger.LogInformation("C# HTTP trigger function processed a request.");
+            string eventName = req.Form["event_name"].FirstOrDefault() ?? String.Empty;
             string firstName = req.Form["first_name"].FirstOrDefault() ?? String.Empty;
+            string lastName = req.Form["last_name"].FirstOrDefault() ?? String.Empty;
             string? temporaryDirectoryName = null;
             try
             {
@@ -53,11 +55,27 @@ namespace Sebug.Function
                 string relevantDate = new DateTimeOffset(relevant.Year, relevant.Month, relevant.Day,
                 relevant.Hour, relevant.Minute, relevant.Second, TimeSpan.FromHours(2)).ToString("yyyy-MM-ddTHH:mm:sszzz");
 
-                var eventTicket = new EventTicket(headerFields: [],
-                    primaryFields: [],
+                var eventTicket = new EventTicket(headerFields: new List<Field> { new Field (
+                    key : "event",
+                    label : "Event",
+                    value : eventName
+                )
+                },
+                    primaryFields: new List<Field> { new Field (
+                        key : "nameOnBadge",
+                        label : "Name",
+                        value : firstName + " " + lastName
+                    )
+                    },
                     secondaryFields: [],
                     auxiliaryFields: [],
-                    backFields: []);
+                    backFields: new List<Field> {
+                        new Field(
+                        key : "fullName",
+                        label : "Full Name",
+                        value : firstName + " " + lastName
+                        )
+            });
 
                 Directory.CreateDirectory(passDirectory);
                 var pass = new Pass("No Homers", passTypeIdentifier, passDescription, serialNumber,
