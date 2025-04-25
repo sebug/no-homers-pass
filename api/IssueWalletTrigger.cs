@@ -53,9 +53,15 @@ namespace Sebug.Function
                 string relevantDate = new DateTimeOffset(relevant.Year, relevant.Month, relevant.Day,
                 relevant.Hour, relevant.Minute, relevant.Second, TimeSpan.FromHours(2)).ToString("yyyy-MM-ddTHH:mm:sszzz");
 
+                var eventTicket = new EventTicket(headerFields: [],
+                    primaryFields: [],
+                    secondaryFields: [],
+                    auxiliaryFields: [],
+                    backFields: []);
+
                 Directory.CreateDirectory(passDirectory);
                 var pass = new Pass("No Homers", passTypeIdentifier, passDescription, serialNumber,
-                teamIdentifier, expirationDate, relevantDate);
+                teamIdentifier, expirationDate, relevantDate, eventTicket);
                 string passString = JsonSerializer.Serialize(pass);
                 await File.WriteAllTextAsync(Path.Combine(passDirectory, "pass.json"),
                     passString);

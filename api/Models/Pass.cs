@@ -7,6 +7,7 @@ string serialNumber,
 string teamIdentifier,
 string expirationDate,
 string relevantDate,
+EventTicket eventTicket,
 int formatVersion = 1)
 {
     
