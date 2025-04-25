@@ -56,7 +56,7 @@ namespace Sebug.Function
                 Path.Combine(passDirectory, "logo@3x.png"));
 
                 var memoryStream = new MemoryStream();
-                ZipFile.CreateFromDirectory(temporaryDirectoryName, memoryStream, CompressionLevel.Optimal, false); // in memory is fine, it's gonna be super small
+                ZipFile.CreateFromDirectory(passDirectory, memoryStream, CompressionLevel.Optimal, false); // in memory is fine, it's gonna be super small
                 return new FileContentResult(memoryStream.ToArray(),
                 "application/zip")
                 {
