@@ -48,9 +48,14 @@ namespace Sebug.Function
 
                 string expirationDate = expiration.ToString("yyyy-MM-ddTHH:mm:sszzz");
 
+                var relevant = DateTimeOffset.Now;
+                
+                string relevantDate = new DateTimeOffset(relevant.Year, relevant.Month, relevant.Day,
+                relevant.Hour, relevant.Minute, relevant.Second, TimeSpan.FromHours(2)).ToString("yyyy-MM-ddTHH:mm:sszzz");
+
                 Directory.CreateDirectory(passDirectory);
                 var pass = new Pass("No Homers", passTypeIdentifier, passDescription, serialNumber,
-                teamIdentifier, expirationDate);
+                teamIdentifier, expirationDate, relevantDate);
                 string passString = JsonSerializer.Serialize(pass);
                 await File.WriteAllTextAsync(Path.Combine(passDirectory, "pass.json"),
                     passString);

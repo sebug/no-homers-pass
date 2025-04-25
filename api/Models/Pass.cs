@@ -6,6 +6,7 @@ string description,
 string serialNumber,
 string teamIdentifier,
 string expirationDate,
+string relevantDate,
 int formatVersion = 1)
 {
     
