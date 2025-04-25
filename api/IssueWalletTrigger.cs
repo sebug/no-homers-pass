@@ -39,8 +39,18 @@ namespace Sebug.Function
 
                 string serialNumber = Guid.NewGuid().ToString().ToUpper();
 
+                string teamIdentifier = Environment.GetEnvironmentVariable("TEAM_IDENTIFIER") ??
+                throw new Exception("TEAM_IDENTIFIER environment variable not defined");
+
+                var expiration = DateTimeOffset.Now.AddDays(1);
+                expiration = new DateTimeOffset(expiration.Year, expiration.Month, expiration.Day, expiration.Hour,
+                expiration.Minute, expiration.Second, TimeSpan.FromHours(2));
+
+                string expirationDate = expiration.ToString("yyyy-MM-ddTHH:mm:sszzz");
+
                 Directory.CreateDirectory(passDirectory);
-                var pass = new Pass("No Homers", passTypeIdentifier, passDescription, serialNumber);
+                var pass = new Pass("No Homers", passTypeIdentifier, passDescription, serialNumber,
+                teamIdentifier, expirationDate);
                 string passString = JsonSerializer.Serialize(pass);
                 await File.WriteAllTextAsync(Path.Combine(passDirectory, "pass.json"),
                     passString);
