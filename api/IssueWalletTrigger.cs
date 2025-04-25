@@ -34,8 +34,13 @@ namespace Sebug.Function
                 string passTypeIdentifier = Environment.GetEnvironmentVariable("PASS_TYPE_ID") ??
                     throw new Exception("PASS_TYPE_ID environment variable not defined");
 
+                string passDescription = Environment.GetEnvironmentVariable("PASS_DESCRIPTION") ??
+                throw new Exception("PASS_DESCRIPTION environment variable not defined");
+
+                string serialNumber = Guid.NewGuid().ToString().ToUpper();
+
                 Directory.CreateDirectory(passDirectory);
-                var pass = new Pass("No Homers", passTypeIdentifier);
+                var pass = new Pass("No Homers", passTypeIdentifier, passDescription, serialNumber);
                 string passString = JsonSerializer.Serialize(pass);
                 await File.WriteAllTextAsync(Path.Combine(passDirectory, "pass.json"),
                     passString);
