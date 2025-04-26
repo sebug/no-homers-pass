@@ -6,6 +6,7 @@ using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Sebug.Function.Models;
+using System.Security.Cryptography;
 
 namespace Sebug.Function
 {
@@ -78,26 +79,50 @@ namespace Sebug.Function
             });
 
                 Directory.CreateDirectory(passDirectory);
+
+                var pathsToHash = new List<string>();
                 var pass = new Pass("No Homers", passTypeIdentifier, passDescription, serialNumber,
                 teamIdentifier, expirationDate, relevantDate, eventTicket);
                 string passString = JsonSerializer.Serialize(pass);
                 await File.WriteAllTextAsync(Path.Combine(passDirectory, "pass.json"),
                     passString);
 
+                pathsToHash.Add("pass.json");
+
                 string currentDirectory = Directory.GetCurrentDirectory();
 
                 File.Copy(Path.Combine(currentDirectory, "logo_full.png"),
                 Path.Combine(passDirectory, "icon.png"));
+                pathsToHash.Add("icon.png");
                 File.Copy(Path.Combine(currentDirectory, "logo_full.png"),
                 Path.Combine(passDirectory, "icon@2x.png"));
+                pathsToHash.Add("icon@2x.png");
                 File.Copy(Path.Combine(currentDirectory, "logo_full.png"),
                 Path.Combine(passDirectory, "icon@3x.png"));
+                pathsToHash.Add("icon@3x.png");
                 File.Copy(Path.Combine(currentDirectory, "logo_full.png"),
                 Path.Combine(passDirectory, "logo.png"));
+                pathsToHash.Add("logo.png");
                 File.Copy(Path.Combine(currentDirectory, "logo_full.png"),
                 Path.Combine(passDirectory, "logo@2x.png"));
+                pathsToHash.Add("logo@2x.png");
                 File.Copy(Path.Combine(currentDirectory, "logo_full.png"),
                 Path.Combine(passDirectory, "logo@3x.png"));
+                pathsToHash.Add("logo@3x.png");
+
+                var manifestDict = new Dictionary<string, string>();
+                foreach (var pathToHash in pathsToHash)
+                {
+                    using (var sha1 = SHA1.Create())
+                    using (var fs = File.OpenRead(Path.Combine(passDirectory, pathToHash)))
+                    {
+                        string hash = BitConverter.ToString(sha1.ComputeHash(fs));
+                        manifestDict[pathToHash] = hash;
+                    }
+                }
+
+                await File.WriteAllTextAsync(Path.Combine(passDirectory, "manifest.json"),
+                    JsonSerializer.Serialize(manifestDict));
 
                 var memoryStream = new MemoryStream();
                 ZipFile.CreateFromDirectory(passDirectory, memoryStream, CompressionLevel.Optimal, false); // in memory is fine, it's gonna be super small
