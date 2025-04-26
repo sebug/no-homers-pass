@@ -116,7 +116,8 @@ namespace Sebug.Function
                     using (var sha1 = SHA1.Create())
                     using (var fs = File.OpenRead(Path.Combine(passDirectory, pathToHash)))
                     {
-                        string hash = BitConverter.ToString(sha1.ComputeHash(fs));
+                        string hash = BitConverter.ToString(sha1.ComputeHash(fs))
+                        .Replace("-", String.Empty);
                         manifestDict[pathToHash] = hash;
                     }
                 }
