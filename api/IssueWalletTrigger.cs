@@ -78,11 +78,14 @@ namespace Sebug.Function
                         )
             });
 
+                var barcode = new Barcode(serialNumber.Replace("-", ""),
+                "PKBarcodeFormatQR", serialNumber.Replace("-", ""), "utf-8");
+
                 Directory.CreateDirectory(passDirectory);
 
                 var pathsToHash = new List<string>();
                 var pass = new Pass("No Homers", passTypeIdentifier, passDescription, serialNumber,
-                teamIdentifier, expirationDate, relevantDate, eventTicket);
+                teamIdentifier, expirationDate, relevantDate, eventTicket, barcode);
                 string passString = JsonSerializer.Serialize(pass);
                 await File.WriteAllTextAsync(Path.Combine(passDirectory, "pass.json"),
                     passString);

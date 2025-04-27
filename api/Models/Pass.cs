@@ -8,6 +8,7 @@ string teamIdentifier,
 string expirationDate,
 string relevantDate,
 EventTicket eventTicket,
+Barcode barcode,
 int formatVersion = 1)
 {
     
