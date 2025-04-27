@@ -51,6 +51,10 @@ namespace Sebug.Function
                 string privateKeyPassword = Environment.GetEnvironmentVariable("PRIVATE_KEY_PASSWORD") ??
                 throw new Exception("PRIVATE_KEY_PASSWORD environment variable not defined");
 
+                string privateKeyBase64 = Environment.GetEnvironmentVariable("PRIVATE_KEY") ??
+                throw new Exception("PRIVATE_KEY environment variable not defined");
+                var privateKeyBytes = Convert.FromBase64String(privateKeyBase64);
+
                 var expiration = DateTimeOffset.Now.AddDays(1);
                 expiration = new DateTimeOffset(expiration.Year, expiration.Month, expiration.Day, expiration.Hour,
                 expiration.Minute, expiration.Second, TimeSpan.FromHours(2));
@@ -136,6 +140,9 @@ namespace Sebug.Function
 
                 await File.WriteAllTextAsync(Path.Combine(passDirectory, "manifest.json"),
                     JsonSerializer.Serialize(manifestDict));
+
+                // Now sign the manifest
+                var certificate = System.Security.Cryptography.X509Certificates.X509CertificateLoader.LoadPkcs12(privateKeyBytes, privateKeyPassword);
 
                 var memoryStream = new MemoryStream();
                 ZipFile.CreateFromDirectory(passDirectory, memoryStream, CompressionLevel.Optimal, false); // in memory is fine, it's gonna be super small
