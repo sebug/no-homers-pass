@@ -174,7 +174,7 @@ namespace Sebug.Function
                 return new FileContentResult(memoryStream.ToArray(),
                 "application/zip")
                 {
-                    FileDownloadName = "pass.zip"
+                    FileDownloadName = "pass.pkpass"
                 };
             }
             catch (Exception ex)
