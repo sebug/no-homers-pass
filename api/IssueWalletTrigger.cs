@@ -165,6 +165,10 @@ namespace Sebug.Function
                 var signed = new SignedCms(content);
                 signed.ComputeSignature(cmsSigner);
 
+                var signedBytes = signed.Encode();
+
+                File.WriteAllBytes(Path.Combine(passDirectory, "signature"), signedBytes);
+
                 var memoryStream = new MemoryStream();
                 ZipFile.CreateFromDirectory(passDirectory, memoryStream, CompressionLevel.Optimal, false); // in memory is fine, it's gonna be super small
                 return new FileContentResult(memoryStream.ToArray(),
