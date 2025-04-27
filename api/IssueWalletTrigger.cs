@@ -146,21 +146,10 @@ namespace Sebug.Function
                 // Now sign the manifest
                 var certificate = System.Security.Cryptography.X509Certificates.X509CertificateLoader.LoadPkcs12(privateKeyBytes, privateKeyPassword);
 
-                if (!certificate.HasPrivateKey)
-                {
-                    throw new Exception("Expected certificate to have a private key");
-                }
-
-                var rsaKey = certificate.GetRSAPrivateKey();
-                if (rsaKey == null)
-                {
-                    throw new Exception("Expected private key to be RSA and present");
-                }
-
                 var manifestBytes = await File.ReadAllBytesAsync(Path.Combine(passDirectory, "manifest.json"));
 
                 // See https://stackoverflow.com/questions/3916736/openssl-net-porting-a-ruby-example-to-c-sharp-from-railscasts-143-paypal-securi
-                var cmsSigner = new CmsSigner(certificate);
+                var cmsSigner = new CmsSigner(SubjectIdentifierType.IssuerAndSerialNumber, certificate);
                 var content = new ContentInfo(manifestBytes);
                 var signed = new SignedCms(content, true);
                 signed.ComputeSignature(cmsSigner);
