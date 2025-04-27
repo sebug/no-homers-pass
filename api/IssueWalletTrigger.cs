@@ -8,6 +8,7 @@ using Microsoft.Extensions.Options;
 using Sebug.Function.Models;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
+using System.Security.Cryptography.Pkcs;
 
 namespace Sebug.Function
 {
@@ -155,6 +156,8 @@ namespace Sebug.Function
                 {
                     throw new Exception("Expected private key to be RSA and present");
                 }
+
+                var manifestBytes = await File.ReadAllBytesAsync(Path.Combine(passDirectory, "manifest.json"));
 
                 var memoryStream = new MemoryStream();
                 ZipFile.CreateFromDirectory(passDirectory, memoryStream, CompressionLevel.Optimal, false); // in memory is fine, it's gonna be super small
