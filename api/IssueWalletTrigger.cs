@@ -7,6 +7,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Sebug.Function.Models;
 using System.Security.Cryptography;
+using System.Security.Cryptography.X509Certificates;
 
 namespace Sebug.Function
 {
@@ -143,6 +144,17 @@ namespace Sebug.Function
 
                 // Now sign the manifest
                 var certificate = System.Security.Cryptography.X509Certificates.X509CertificateLoader.LoadPkcs12(privateKeyBytes, privateKeyPassword);
+
+                if (!certificate.HasPrivateKey)
+                {
+                    throw new Exception("Expected certificate to have a private key");
+                }
+
+                var rsaKey = certificate.GetRSAPrivateKey();
+                if (rsaKey == null)
+                {
+                    throw new Exception("Expected private key to be RSA and present");
+                }
 
                 var memoryStream = new MemoryStream();
                 ZipFile.CreateFromDirectory(passDirectory, memoryStream, CompressionLevel.Optimal, false); // in memory is fine, it's gonna be super small
