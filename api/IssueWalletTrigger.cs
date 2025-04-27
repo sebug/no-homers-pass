@@ -159,6 +159,12 @@ namespace Sebug.Function
 
                 var manifestBytes = await File.ReadAllBytesAsync(Path.Combine(passDirectory, "manifest.json"));
 
+                // See https://stackoverflow.com/questions/3916736/openssl-net-porting-a-ruby-example-to-c-sharp-from-railscasts-143-paypal-securi
+                var cmsSigner = new CmsSigner(certificate);
+                var content = new ContentInfo(manifestBytes);
+                var signed = new SignedCms(content);
+                signed.ComputeSignature(cmsSigner);
+
                 var memoryStream = new MemoryStream();
                 ZipFile.CreateFromDirectory(passDirectory, memoryStream, CompressionLevel.Optimal, false); // in memory is fine, it's gonna be super small
                 return new FileContentResult(memoryStream.ToArray(),
