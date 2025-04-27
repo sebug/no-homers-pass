@@ -48,6 +48,9 @@ namespace Sebug.Function
                 string teamIdentifier = Environment.GetEnvironmentVariable("TEAM_IDENTIFIER") ??
                 throw new Exception("TEAM_IDENTIFIER environment variable not defined");
 
+                string privateKeyPassword = Environment.GetEnvironmentVariable("PRIVATE_KEY_PASSWORD") ??
+                throw new Exception("PRIVATE_KEY_PASSWORD environment variable not defined");
+
                 var expiration = DateTimeOffset.Now.AddDays(1);
                 expiration = new DateTimeOffset(expiration.Year, expiration.Month, expiration.Day, expiration.Hour,
                 expiration.Minute, expiration.Second, TimeSpan.FromHours(2));

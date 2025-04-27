@@ -5,3 +5,13 @@ We will do this as an Azure Functions app.
 
  - [Create a Pass Type Identifier](https://developer.apple.com/documentation/walletpasses/building-a-pass) - I saved the ID in the environment variable PASS_TYPE_ID for codespaces and actions and in the Azure Static Web App Environment variables
  - [Generate a Signing Certificate](https://developer.apple.com/documentation/walletpasses/building-a-pass#Generate-a-Signing-Certificate)
+
+ After created the certificate, import it in keychain management and then export the private key as p12.
+
+ Then create an X509Certificate2 from the bytes that we stored in the environment variable.
+
+    var bytes = System.IO.File.ReadAllBytes("nohomers_dev_key.p12");
+    var base64String = Convert.ToBase64String(bytes);
+
+Note on generic implementation here: could do the processing client-side upon upload to avoid sending the file somewhere. But then again, that is what the password is for.
+
