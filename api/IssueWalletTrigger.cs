@@ -151,6 +151,7 @@ namespace Sebug.Function
                 // See https://stackoverflow.com/questions/3916736/openssl-net-porting-a-ruby-example-to-c-sharp-from-railscasts-143-paypal-securi
                 var cmsSigner = new CmsSigner(SubjectIdentifierType.IssuerAndSerialNumber, certificate);
                 cmsSigner.IncludeOption = X509IncludeOption.EndCertOnly;
+                cmsSigner.SignedAttributes.Add(new Pkcs9SigningTime(DateTime.UtcNow));
                 var content = new ContentInfo(manifestBytes);
                 var signed = new SignedCms(content, true);
                 signed.ComputeSignature(cmsSigner);
