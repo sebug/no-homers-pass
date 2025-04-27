@@ -27,6 +27,9 @@ namespace Sebug.Function
             string eventName = req.Form["event_name"].FirstOrDefault() ?? String.Empty;
             string firstName = req.Form["first_name"].FirstOrDefault() ?? String.Empty;
             string lastName = req.Form["last_name"].FirstOrDefault() ?? String.Empty;
+            string foregroundColorHex = req.Form["foreground_color"].FirstOrDefault() ?? "#000000";
+            string backgroundColorHex = req.Form["background_color"].FirstOrDefault() ?? "#ffffff";
+            string labelColorHex = req.Form["label_color"].FirstOrDefault() ?? "#000000";
             string? temporaryDirectoryName = null;
             try
             {
@@ -85,7 +88,10 @@ namespace Sebug.Function
 
                 var pathsToHash = new List<string>();
                 var pass = new Pass("No Homers", passTypeIdentifier, passDescription, serialNumber,
-                teamIdentifier, expirationDate, relevantDate, eventTicket, barcode);
+                teamIdentifier, expirationDate, relevantDate, eventTicket, barcode,
+                foregroundColor: GetRGBColorTriplet(foregroundColorHex),
+                backgroundColor: GetRGBColorTriplet(backgroundColorHex),
+                labelColor: GetRGBColorTriplet(labelColorHex));
                 string passString = JsonSerializer.Serialize(pass);
                 await File.WriteAllTextAsync(Path.Combine(passDirectory, "pass.json"),
                     passString);
@@ -147,6 +153,21 @@ namespace Sebug.Function
                     Directory.Delete(temporaryDirectoryName, true);
                 }
             }
+        }
+
+        private string GetRGBColorTriplet(string hexCode)
+        {
+            if (hexCode.Length != 7) {
+                throw new Exception("Expected a hex code with 7 characters");
+            }
+            string redHex = hexCode.Substring(1, 2);
+            string greenHex = hexCode.Substring(3, 2);
+            string blueHex = hexCode.Substring(5, 2);
+            string result = "rgb(" +
+            Convert.ToInt32(redHex, 16) + "," + Convert.ToInt32(greenHex, 16) + "," +
+            Convert.ToInt32(blueHex, 16) +
+            ")";
+            return result;
         }
     }
 }

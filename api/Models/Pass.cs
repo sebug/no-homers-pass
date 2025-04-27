@@ -9,6 +9,9 @@ string expirationDate,
 string relevantDate,
 EventTicket eventTicket,
 Barcode barcode,
+string foregroundColor,
+string backgroundColor,
+string labelColor,
 int formatVersion = 1)
 {
     
