@@ -4,6 +4,14 @@ We will do this as an Azure Functions app.
 ## Steps on the Azure Portal
 You'll need to set up the Azure Static Web App. Also, you'll have to create a storage account.
 
+Then go to that storage account and get one of the access keys (one day I'll set up managed identity, but this is not the project).
+
+Store it in the environment variable SA_ACCESS_KEY on the static web app.
+
+Store the account name in SA_ACCOUNT_NAME
+
+Store the storage uri (like https://myaccount.table.core.windows.net ) in SA_STORAGE_URI
+
 ## Steps on the Apple Developer Portal Side
 
  - [Create a Pass Type Identifier](https://developer.apple.com/documentation/walletpasses/building-a-pass) - I saved the ID in the environment variable PASS_TYPE_ID for codespaces and actions and in the Azure Static Web App Environment variables

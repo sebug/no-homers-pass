@@ -9,6 +9,7 @@ using Sebug.Function.Models;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using System.Security.Cryptography.Pkcs;
+using Azure.Data.Tables;
 
 namespace Sebug.Function
 {
@@ -44,6 +45,8 @@ namespace Sebug.Function
 
                 string passDescription = Environment.GetEnvironmentVariable("PASS_DESCRIPTION") ??
                 throw new Exception("PASS_DESCRIPTION environment variable not defined");
+
+                var serviceClient = CreateTableServiceClient();
 
                 string serialNumber = Guid.NewGuid().ToString().ToUpper();
 
@@ -181,6 +184,22 @@ namespace Sebug.Function
             }
         }
 
+        private TableServiceClient CreateTableServiceClient()
+        {
+            string saAccessKey = Environment.GetEnvironmentVariable("SA_ACCESS_KEY") ??
+                throw new Exception("SA_ACCESS_KEY environment variable not defined");
+
+            string saAccountName = Environment.GetEnvironmentVariable("SA_ACCOUNT_NAME") ??
+                throw new Exception("SA_ACCOUNT_NAME environment variable not defined");
+
+            string saStorageUri = Environment.GetEnvironmentVariable("SA_STORAGE_URI") ??
+                throw new Exception("SA_STORAGE_URI environment variable not defined");
+
+            var serviceClient = new TableServiceClient(new Uri(saStorageUri),
+            new TableSharedKeyCredential(saAccountName, saAccessKey));
+
+            return serviceClient;
+        }
         private string GetRGBColorTriplet(string hexCode)
         {
             if (hexCode.Length != 7) {
