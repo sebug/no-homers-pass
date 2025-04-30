@@ -49,8 +49,6 @@ namespace Sebug.Function
 
                 var serviceClient = CreateTableServiceClient();
 
-                //var passesTable = CreatePassTable(serviceClient);
-
                 string serialNumber = Guid.NewGuid().ToString().ToUpper();
 
                 string accessKey = Guid.NewGuid().ToString().ToLower().Replace("-", String.Empty);
@@ -208,12 +206,6 @@ namespace Sebug.Function
             return serviceClient;
         }
 
-        private TableItem CreatePassTable(TableServiceClient tableServiceClient)
-        {
-            var table = tableServiceClient.CreateTableIfNotExists("passes");
-            return table;
-        }
-
         private void InsertPassInformation(string serialNumber, string accessKey)
         {
             string saAccessKey = Environment.GetEnvironmentVariable("SA_ACCESS_KEY") ??
@@ -229,7 +221,7 @@ namespace Sebug.Function
                 "passes",
                 new TableSharedKeyCredential(saAccountName, saAccessKey));
 
-            tableClient.Create();
+            tableClient.CreateIfNotExists();
 
             var passEntity = new TableEntity("prod", serialNumber)
             {
