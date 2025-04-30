@@ -10,6 +10,7 @@ using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using System.Security.Cryptography.Pkcs;
 using Azure.Data.Tables;
+using Azure.Data.Tables.Models;
 
 namespace Sebug.Function
 {
@@ -48,7 +49,13 @@ namespace Sebug.Function
 
                 var serviceClient = CreateTableServiceClient();
 
+                var passesTable = CreatePassTable(serviceClient);
+
                 string serialNumber = Guid.NewGuid().ToString().ToUpper();
+
+                string accessKey = Guid.NewGuid().ToString().ToLower().Replace("-", String.Empty);
+
+                InsertPassInformation(serialNumber, accessKey);
 
                 string teamIdentifier = Environment.GetEnvironmentVariable("TEAM_IDENTIFIER") ??
                 throw new Exception("TEAM_IDENTIFIER environment variable not defined");
@@ -200,6 +207,37 @@ namespace Sebug.Function
 
             return serviceClient;
         }
+
+        private TableItem CreatePassTable(TableServiceClient tableServiceClient)
+        {
+            var table = tableServiceClient.CreateTableIfNotExists("passes");
+            return table;
+        }
+
+        private void InsertPassInformation(string serialNumber, string accessKey)
+        {
+            string saAccessKey = Environment.GetEnvironmentVariable("SA_ACCESS_KEY") ??
+                throw new Exception("SA_ACCESS_KEY environment variable not defined");
+
+            string saAccountName = Environment.GetEnvironmentVariable("SA_ACCOUNT_NAME") ??
+                throw new Exception("SA_ACCOUNT_NAME environment variable not defined");
+
+            string saStorageUri = Environment.GetEnvironmentVariable("SA_STORAGE_URI") ??
+                throw new Exception("SA_STORAGE_URI environment variable not defined");
+
+            var tableClient = new TableClient(new Uri(saStorageUri),
+                "passes",
+                new TableSharedKeyCredential(saAccountName, saAccessKey));
+
+            tableClient.Create();
+
+            var passEntity = new TableEntity("prod", serialNumber)
+            {
+                { "AccessKey", accessKey }
+            };
+            tableClient.AddEntity(passEntity);
+        }
+
         private string GetRGBColorTriplet(string hexCode)
         {
             if (hexCode.Length != 7) {
