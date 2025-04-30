@@ -49,7 +49,7 @@ namespace Sebug.Function
 
                 var serviceClient = CreateTableServiceClient();
 
-                var passesTable = CreatePassTable(serviceClient);
+                //var passesTable = CreatePassTable(serviceClient);
 
                 string serialNumber = Guid.NewGuid().ToString().ToUpper();
 
