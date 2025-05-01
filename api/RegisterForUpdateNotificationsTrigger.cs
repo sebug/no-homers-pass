@@ -29,12 +29,21 @@ namespace Sebug.Function
             string? authToken = null;
             if (req.Headers != null && req.Headers.ContainsKey("X-Authorization"))
             {
-                authToken = req.Headers["X-Authorization"];
+                string? authorizationHeader = req.Headers["X-Authorization"];
+                if (authorizationHeader != null)
+                {
+                    int spaceIdx = authorizationHeader.IndexOf(' ');
+                    if (spaceIdx >= 0)
+                    {
+                        authToken = authorizationHeader.Substring(spaceIdx + 1);
+                    }
+                }
             }
             string? deviceLibraryIdentifier = req.Query["deviceLibraryIdentifier"];
             string? passTypeIdentifier = req.Query["passTypeIdentifier"];
             string? serialNumber = req.Query["serialNumber"];
-            _logger.LogInformation("C# HTTP trigger function processed a request.");
+            _logger.LogInformation("Registering device " + deviceLibraryIdentifier + " for pass type " + passTypeIdentifier + " with serial number " +
+            serialNumber + ", auth token is " + authToken);
             return new OkObjectResult("Welcome to Azure Functions!" + pushToken?.pushToken + ". Auth is " + authToken +
             "parameters are: " + deviceLibraryIdentifier + ", " + passTypeIdentifier + ", " + serialNumber);
         }
