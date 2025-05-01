@@ -58,6 +58,9 @@ namespace Sebug.Function
                 string teamIdentifier = Environment.GetEnvironmentVariable("TEAM_IDENTIFIER") ??
                 throw new Exception("TEAM_IDENTIFIER environment variable not defined");
 
+                string apiManagementBaseURL = Environment.GetEnvironmentVariable("API_MANAGEMENT_BASE_URL") ??
+                throw new Exception("API_MANAGEMENT_BASE_URL environment variable not defined");
+
                 string privateKeyPassword = Environment.GetEnvironmentVariable("PRIVATE_KEY_PASSWORD") ??
                 throw new Exception("PRIVATE_KEY_PASSWORD environment variable not defined");
 
@@ -108,7 +111,9 @@ namespace Sebug.Function
                 teamIdentifier, expirationDate, relevantDate, eventTicket, barcode,
                 foregroundColor: GetRGBColorTriplet(foregroundColorHex),
                 backgroundColor: GetRGBColorTriplet(backgroundColorHex),
-                labelColor: GetRGBColorTriplet(labelColorHex));
+                labelColor: GetRGBColorTriplet(labelColorHex),
+                authenticationToken: accessKey,
+                webServiceURL: apiManagementBaseURL);
                 string passString = JsonSerializer.Serialize(pass);
                 await File.WriteAllTextAsync(Path.Combine(passDirectory, "pass.json"),
                     passString);

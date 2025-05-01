@@ -12,6 +12,8 @@ Barcode barcode,
 string foregroundColor,
 string backgroundColor,
 string labelColor,
+string authenticationToken,
+string webServiceURL,
 int formatVersion = 1)
 {
     
