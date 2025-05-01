@@ -31,8 +31,12 @@ namespace Sebug.Function
             {
                 authToken = req.Headers.Authorization.First();
             }
+            string? deviceLibraryIdentifier = req.Query["deviceLibraryIdentifier"];
+            string? passTypeIdentifier = req.Query["passTypeIdentifier"];
+            string? serialNumber = req.Query["serialNumber"];
             _logger.LogInformation("C# HTTP trigger function processed a request.");
-            return new OkObjectResult("Welcome to Azure Functions!" + pushToken?.pushToken + ". Auth is " + authToken);
+            return new OkObjectResult("Welcome to Azure Functions!" + pushToken?.pushToken + ". Auth is " + authToken +
+            "parameters are: " + deviceLibraryIdentifier + ", " + passTypeIdentifier + ", " + serialNumber);
         }
     }
 }
