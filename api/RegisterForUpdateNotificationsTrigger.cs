@@ -26,8 +26,28 @@ namespace Sebug.Function
             {
                 pushToken = JsonSerializer.Deserialize<PushToken>(pushBodyString);
             }
+            string? authToken = null;
+            if (req.Headers.ContainsKey("Authorization"))
+            {
+                var authHeader = req.Headers.Authorization.First();
+                if (authHeader == null)
+                {
+                    throw new Exception("Expected auth header by now");
+                }
+                int applePassIdx = authHeader.IndexOf("ApplePass");
+                if (applePassIdx < 0)
+                {
+                    throw new Exception("Authorization header is not ApplePass");
+                }
+                int spaceIndex = authHeader.IndexOf(' ');
+                if (spaceIndex < 0)
+                {
+                    throw new Exception("Did not find space after ApplePass");
+                }
+                authToken = authHeader.Substring(spaceIndex + 1);
+            }
             _logger.LogInformation("C# HTTP trigger function processed a request.");
-            return new OkObjectResult("Welcome to Azure Functions!" + pushToken?.pushToken);
+            return new OkObjectResult("Welcome to Azure Functions!" + pushToken?.pushToken + ". Auth is " + authToken);
         }
     }
 }
