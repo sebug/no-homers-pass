@@ -31,3 +31,6 @@ Once the pass gets registered on your phone, apple will call a [register URL](ht
 
 Set up an Azure API Management, Consumption version.
 
+Then add an HTTP API and product. Rewrite the path URL to arguments to the function trigger and then deal with that.
+
+Store the base URL of the API management in the environment variable API_MANAGEMENT_BASE_URL
