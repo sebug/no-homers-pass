@@ -1,7 +1,9 @@
+using System.Text.Json;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Logging;
+using Sebug.Function.Models;
 
 namespace Sebug.Function
 {
@@ -19,8 +21,13 @@ namespace Sebug.Function
         {
             using var sr = new StreamReader(req.Body);
             string pushBodyString = await sr.ReadToEndAsync();
+            PushToken? pushToken = null;
+            if (!String.IsNullOrEmpty(pushBodyString))
+            {
+                pushToken = JsonSerializer.Deserialize<PushToken>(pushBodyString);
+            }
             _logger.LogInformation("C# HTTP trigger function processed a request.");
-            return new OkObjectResult("Welcome to Azure Functions!" + pushBodyString);
+            return new OkObjectResult("Welcome to Azure Functions!" + pushToken?.pushToken);
         }
     }
 }
