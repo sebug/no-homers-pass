@@ -27,7 +27,7 @@ Store the storage uri (like https://myaccount.table.core.windows.net ) in SA_STO
 Note on generic implementation here: could do the processing client-side upon upload to avoid sending the file somewhere. But then again, that is what the password is for.
 
 ## Web Service for updates
-Once the pass gets registered on your phone, apple will call a register URL. Since this has a specific URL, we'll have to use Azure API Management to redirect that to our HTTP trigger.
+Once the pass gets registered on your phone, apple will call a [register URL](https://developer.apple.com/documentation/walletpasses/adding-a-web-service-to-update-passes). Since this has a specific URL, we'll have to use Azure API Management to redirect that to our HTTP trigger.
 
 Set up an Azure API Management, Consumption version.
 
