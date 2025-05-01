@@ -27,9 +27,9 @@ namespace Sebug.Function
                 pushToken = JsonSerializer.Deserialize<PushToken>(pushBodyString);
             }
             string? authToken = null;
-            if (req.Headers != null && req.Headers.ContainsKey("Authorization"))
+            if (req.Headers != null && req.Headers.Authorization.Any())
             {
-                authToken = req.Headers["Authorization"];
+                authToken = req.Headers.Authorization.First();
             }
             _logger.LogInformation("C# HTTP trigger function processed a request.");
             return new OkObjectResult("Welcome to Azure Functions!" + pushToken?.pushToken + ". Auth is " + authToken);
