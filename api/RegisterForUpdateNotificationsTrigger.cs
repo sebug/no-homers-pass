@@ -27,9 +27,9 @@ namespace Sebug.Function
                 pushToken = JsonSerializer.Deserialize<PushToken>(pushBodyString);
             }
             string? authToken = null;
-            if (req.Headers != null && req.Headers.Authorization.Any())
+            if (req.Headers != null && req.Headers.ContainsKey("X-Authorization"))
             {
-                authToken = req.Headers.Authorization.First();
+                authToken = req.Headers["X-Authorization"];
             }
             string? deviceLibraryIdentifier = req.Query["deviceLibraryIdentifier"];
             string? passTypeIdentifier = req.Query["passTypeIdentifier"];
