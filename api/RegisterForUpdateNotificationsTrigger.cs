@@ -43,6 +43,26 @@ namespace Sebug.Function
             string? deviceLibraryIdentifier = req.Query["deviceLibraryIdentifier"];
             string? passTypeIdentifier = req.Query["passTypeIdentifier"];
             string? serialNumber = req.Query["serialNumber"];
+
+            if (serialNumber == null)
+            {
+                return new NotFoundObjectResult("Did not find pass");
+            }
+            
+            var passStorageProvider = PassStorageProvider.GetFromEnvironment();
+
+            var entry = passStorageProvider.GetPassBySerialNumber(serialNumber);
+
+            if (entry == null)
+            {
+                return new NotFoundObjectResult("Did not find pass with serial number " + serialNumber);
+            }
+
+            if (entry["AccessKey"] == null || entry["AccessKey"].ToString() != authToken)
+            {
+                return new UnauthorizedObjectResult("Not authorized");
+            }
+
             _logger.LogInformation("Registering device " + deviceLibraryIdentifier + " for pass type " + passTypeIdentifier + " with serial number " +
             serialNumber + ", auth token is " + authToken);
 
