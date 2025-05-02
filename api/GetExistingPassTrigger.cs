@@ -33,6 +33,7 @@ namespace Sebug.Function
             }
             string passTypeIdentifier = req.Query["passTypeIdentifier"].FirstOrDefault() ?? String.Empty;
             string serialNumber = req.Query["serialNumber"].FirstOrDefault() ?? String.Empty;
+
             return new OkObjectResult("Welcome to Azure Functions!");
         }
     }

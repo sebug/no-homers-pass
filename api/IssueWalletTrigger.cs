@@ -37,30 +37,13 @@ namespace Sebug.Function
             try
             {
 
-                string passTypeIdentifier = Environment.GetEnvironmentVariable("PASS_TYPE_ID") ??
-                    throw new Exception("PASS_TYPE_ID environment variable not defined");
-
-                string passDescription = Environment.GetEnvironmentVariable("PASS_DESCRIPTION") ??
-                throw new Exception("PASS_DESCRIPTION environment variable not defined");
-
                 var serviceClient = CreateTableServiceClient();
 
                 string serialNumber = Guid.NewGuid().ToString().ToUpper();
 
                 string accessKey = Guid.NewGuid().ToString().ToLower().Replace("-", String.Empty);
 
-                string teamIdentifier = Environment.GetEnvironmentVariable("TEAM_IDENTIFIER") ??
-                throw new Exception("TEAM_IDENTIFIER environment variable not defined");
-
-                string apiManagementBaseURL = Environment.GetEnvironmentVariable("API_MANAGEMENT_BASE_URL") ??
-                throw new Exception("API_MANAGEMENT_BASE_URL environment variable not defined");
-
-                string privateKeyPassword = Environment.GetEnvironmentVariable("PRIVATE_KEY_PASSWORD") ??
-                throw new Exception("PRIVATE_KEY_PASSWORD environment variable not defined");
-
-                string privateKeyBase64 = Environment.GetEnvironmentVariable("PRIVATE_KEY") ??
-                throw new Exception("PRIVATE_KEY environment variable not defined");
-                var privateKeyBytes = Convert.FromBase64String(privateKeyBase64);
+                var settings = PassSettings.GetFromEnvironment();
 
                 var expiration = DateTimeOffset.Now.AddDays(1);
                 expiration = new DateTimeOffset(expiration.Year, expiration.Month, expiration.Day, expiration.Hour,
@@ -97,16 +80,16 @@ namespace Sebug.Function
 
                 var barcode = new Barcode(serialNumber.Replace("-", ""),
                 "PKBarcodeFormatQR", serialNumber.Replace("-", ""), "utf-8");
-                var pass = new Pass("No Homers", passTypeIdentifier, passDescription, serialNumber,
-                teamIdentifier, expirationDate, relevantDate, eventTicket, barcode,
+                var pass = new Pass("No Homers", settings.PassTypeIdentifier, settings.PassDescription, serialNumber,
+                settings.TeamIdentifier, expirationDate, relevantDate, eventTicket, barcode,
                 foregroundColor: GetRGBColorTriplet(foregroundColorHex),
                 backgroundColor: GetRGBColorTriplet(backgroundColorHex),
                 labelColor: GetRGBColorTriplet(labelColorHex),
                 authenticationToken: accessKey,
-                webServiceURL: apiManagementBaseURL);
+                webServiceURL: settings.APIManagementBaseURL);
                 InsertPassInformation(pass);
 
-                var passContentBytes = await new PkPassFileGenerator(pass).Generate(privateKeyBytes, privateKeyPassword);
+                var passContentBytes = await new PkPassFileGenerator(pass).Generate(settings.PrivateKeyBytes, settings.PrivateKeyPassword);
                 
                 return new FileContentResult(passContentBytes,
                 "application/zip")
