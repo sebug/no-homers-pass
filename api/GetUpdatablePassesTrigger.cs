@@ -21,7 +21,7 @@ namespace Sebug.Function
             string passTypeIdentifier = req.Query["passTypeIdentifier"].FirstOrDefault() ?? String.Empty;
             string deviceLibraryIdentifier = req.Query["deviceLibraryIdentifier"].FirstOrDefault() ?? String.Empty;
             string previousLastUpdated = req.Query["previousLastUpdated"].FirstOrDefault() ?? String.Empty;
-            _logger.LogInformation("C# HTTP trigger function processed a request for device library identifier " + deviceLibraryIdentifier);
+            _logger.LogError("C# HTTP trigger function processed a request for device library identifier " + deviceLibraryIdentifier);
             var passesUpdatedSince = GetPassesUpdatedSince(deviceLibraryIdentifier, previousLastUpdated);
             return new OkObjectResult(passesUpdatedSince);
         }
@@ -46,11 +46,11 @@ namespace Sebug.Function
             }
             if (searchResults == null || !searchResults.Any())
             {
-                _logger.LogInformation("No Search results");
+                _logger.LogError("No Search results");
             }
             else
             {
-                _logger.LogInformation("Found " + searchResults.Count() + " search results");
+                _logger.LogError("Found " + searchResults.Count() + " search results");
             }
             if (searchResults != null)
             {
