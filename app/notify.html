@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <title>Notify Device</title>
+        <link rel="stylesheet" href="style.css" />
+    </head>
+    <body>
+        <header>
+            <h1>Notify Device</h1>
+        </header>
+        <main>
+            <p>Enter the device library identifier below to notify the device of updated passes.</p>
+            <form method="post" action="/api/NotifyAboutPassUpdatesTrigger">
+                <p><label>Device Library Identifier: <input name="device_library_identifier" /></label></p>
+                <p><input type="submit" /></p>
+            </form>
+        </main>
+    </body>
+</html>
