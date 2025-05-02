@@ -51,8 +51,7 @@ namespace Sebug.Function
                 client.BaseAddress = new Uri(settings.APNSUrl);
                 client.DefaultRequestVersion = new Version("2.0");
                 var payload = new StringContent("{}", Encoding.UTF8, "application/json"); // empty object as per spec
-                payload.Headers.Add(":method", "POST");
-                payload.Headers.Add(":path", "/3/device/" + deviceLibraryIdentifier);
+                
                 payload.Headers.Add("apns-push-type", "alert");
                 payload.Headers.Add("apns-topic", settings.PassTypeIdentifier);
 
