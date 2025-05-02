@@ -31,7 +31,7 @@ namespace Sebug.Function
             var passStorageProvider = PassStorageProvider.GetFromEnvironment();
             var deviceLibrariesTableClient = passStorageProvider.GetTableClient("deviceLibraries");
             var device = deviceLibrariesTableClient.GetEntityIfExists<TableEntity>("prod", deviceLibraryIdentifier);
-            if (device == null || device.Value == null)
+            if (device == null || !device.HasValue)
             {
                 return new List<TableEntity>();
             }
@@ -54,7 +54,7 @@ namespace Sebug.Function
                     {
                         var serialNumber = deviceToPass.RowKey.Substring(underscoreIdx + 1);
                         var pass = passesTableClient.GetEntityIfExists<TableEntity>("prod", serialNumber);
-                        if (pass != null && pass.Value != null)
+                        if (pass != null && pass.HasValue && pass.Value != null)
                         {
                             // TODO: filter by date
                             result.Add(pass.Value);
