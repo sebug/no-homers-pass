@@ -1,3 +1,4 @@
+using System.Text.Json;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.Functions.Worker;
@@ -33,6 +34,15 @@ namespace Sebug.Function
             }
             string passTypeIdentifier = req.Query["passTypeIdentifier"].FirstOrDefault() ?? String.Empty;
             string serialNumber = req.Query["serialNumber"].FirstOrDefault() ?? String.Empty;
+
+            var passStorageProvider = PassStorageProvider.GetFromEnvironment();
+
+            var entry = passStorageProvider.GetPassBySerialNumber(serialNumber);
+
+            if (entry != null)
+            {
+                return new OkObjectResult(entry);
+            }
 
             return new OkObjectResult("Welcome to Azure Functions!");
         }

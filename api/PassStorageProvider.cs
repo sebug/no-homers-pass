@@ -1,4 +1,5 @@
 using Azure.Data.Tables;
+using Sebug.Function.Models;
 
 namespace Sebug.Function;
 
@@ -26,5 +27,16 @@ public record PassStorageProvider(string StorageAccountAccessKey,
         tableName,
         new TableSharedKeyCredential(StorageAccountName, StorageAccountAccessKey));
         return tableClient;
+    }
+
+    public TableEntity? GetPassBySerialNumber(string serialNumber)
+    {
+        var tableClient = GetTableClient("passes");
+        var response = tableClient.GetEntity<TableEntity>("prod", serialNumber);
+        if (response == null)
+        {
+            return null;
+        }
+        return response.Value;
     }
 }
