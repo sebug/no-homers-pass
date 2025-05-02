@@ -44,6 +44,14 @@ namespace Sebug.Function
             {
                 referenceDate = dt;
             }
+            if (searchResults == null || !searchResults.Any())
+            {
+                _logger.LogInformation("No Search results");
+            }
+            else
+            {
+                _logger.LogInformation("Found " + searchResults.Count() + " search results");
+            }
             if (searchResults != null)
             {
                 var passesTableClient = passStorageProvider.GetTableClient("passes");
