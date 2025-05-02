@@ -34,12 +34,8 @@ namespace Sebug.Function
             string foregroundColorHex = req.Form["foreground_color"].FirstOrDefault() ?? "#000000";
             string backgroundColorHex = req.Form["background_color"].FirstOrDefault() ?? "#ffffff";
             string labelColorHex = req.Form["label_color"].FirstOrDefault() ?? "#000000";
-            string? temporaryDirectoryName = null;
             try
             {
-                temporaryDirectoryName = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
-                Directory.CreateDirectory(temporaryDirectoryName);
-                string passDirectory = Path.Combine(temporaryDirectoryName, "No Homers Membership.pass");
 
                 string passTypeIdentifier = Environment.GetEnvironmentVariable("PASS_TYPE_ID") ??
                     throw new Exception("PASS_TYPE_ID environment variable not defined");
@@ -101,10 +97,6 @@ namespace Sebug.Function
 
                 var barcode = new Barcode(serialNumber.Replace("-", ""),
                 "PKBarcodeFormatQR", serialNumber.Replace("-", ""), "utf-8");
-
-                Directory.CreateDirectory(passDirectory);
-
-                var pathsToHash = new List<string>();
                 var pass = new Pass("No Homers", passTypeIdentifier, passDescription, serialNumber,
                 teamIdentifier, expirationDate, relevantDate, eventTicket, barcode,
                 foregroundColor: GetRGBColorTriplet(foregroundColorHex),
@@ -112,70 +104,11 @@ namespace Sebug.Function
                 labelColor: GetRGBColorTriplet(labelColorHex),
                 authenticationToken: accessKey,
                 webServiceURL: apiManagementBaseURL);
-                string passString = JsonSerializer.Serialize(pass);
-                await File.WriteAllTextAsync(Path.Combine(passDirectory, "pass.json"),
-                    passString);
-
-                pathsToHash.Add("pass.json");
-
                 InsertPassInformation(pass);
 
-                string currentDirectory = Directory.GetCurrentDirectory();
-
-                File.Copy(Path.Combine(currentDirectory, "logo_full.png"),
-                Path.Combine(passDirectory, "icon.png"));
-                pathsToHash.Add("icon.png");
-                File.Copy(Path.Combine(currentDirectory, "logo_full.png"),
-                Path.Combine(passDirectory, "icon@2x.png"));
-                pathsToHash.Add("icon@2x.png");
-                File.Copy(Path.Combine(currentDirectory, "logo_full.png"),
-                Path.Combine(passDirectory, "icon@3x.png"));
-                pathsToHash.Add("icon@3x.png");
-                File.Copy(Path.Combine(currentDirectory, "logo_full.png"),
-                Path.Combine(passDirectory, "logo.png"));
-                pathsToHash.Add("logo.png");
-                File.Copy(Path.Combine(currentDirectory, "logo_full.png"),
-                Path.Combine(passDirectory, "logo@2x.png"));
-                pathsToHash.Add("logo@2x.png");
-                File.Copy(Path.Combine(currentDirectory, "logo_full.png"),
-                Path.Combine(passDirectory, "logo@3x.png"));
-                pathsToHash.Add("logo@3x.png");
-
-                var manifestDict = new Dictionary<string, string>();
-                foreach (var pathToHash in pathsToHash)
-                {
-                    using (var sha1 = SHA1.Create())
-                    using (var fs = File.OpenRead(Path.Combine(passDirectory, pathToHash)))
-                    {
-                        string hash = BitConverter.ToString(sha1.ComputeHash(fs))
-                        .Replace("-", String.Empty).ToLower();
-                        manifestDict[pathToHash] = hash;
-                    }
-                }
-
-                await File.WriteAllTextAsync(Path.Combine(passDirectory, "manifest.json"),
-                    JsonSerializer.Serialize(manifestDict));
-
-                // Now sign the manifest
-                var certificate = System.Security.Cryptography.X509Certificates.X509CertificateLoader.LoadPkcs12(privateKeyBytes, privateKeyPassword);
-
-                var manifestBytes = await File.ReadAllBytesAsync(Path.Combine(passDirectory, "manifest.json"));
-
-                // See https://stackoverflow.com/questions/3916736/openssl-net-porting-a-ruby-example-to-c-sharp-from-railscasts-143-paypal-securi
-                var cmsSigner = new CmsSigner(SubjectIdentifierType.IssuerAndSerialNumber, certificate);
-                cmsSigner.IncludeOption = X509IncludeOption.EndCertOnly;
-                cmsSigner.SignedAttributes.Add(new Pkcs9SigningTime(DateTime.UtcNow));
-                var content = new ContentInfo(manifestBytes);
-                var signed = new SignedCms(content, true);
-                signed.ComputeSignature(cmsSigner);
-
-                var signedBytes = signed.Encode();
-
-                File.WriteAllBytes(Path.Combine(passDirectory, "signature"), signedBytes);
-
-                var memoryStream = new MemoryStream();
-                ZipFile.CreateFromDirectory(passDirectory, memoryStream, CompressionLevel.Optimal, false); // in memory is fine, it's gonna be super small
-                return new FileContentResult(memoryStream.ToArray(),
+                var passContentBytes = await new PkPassFileGenerator(pass).Generate(privateKeyBytes, privateKeyPassword);
+                
+                return new FileContentResult(passContentBytes,
                 "application/zip")
                 {
                     FileDownloadName = "pass.pkpass"
@@ -184,13 +117,6 @@ namespace Sebug.Function
             catch (Exception ex)
             {
                 return new BadRequestObjectResult(ex.Message);
-            }
-            finally
-            {
-                if (!String.IsNullOrEmpty(temporaryDirectoryName) && Directory.Exists(temporaryDirectoryName))
-                {
-                    Directory.Delete(temporaryDirectoryName, true);
-                }
             }
         }
 
