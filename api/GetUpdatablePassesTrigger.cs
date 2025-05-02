@@ -20,7 +20,7 @@ namespace Sebug.Function
         {
             string passTypeIdentifier = req.Query["passTypeIdentifier"].FirstOrDefault() ?? String.Empty;
             string deviceLibraryIdentifier = req.Query["deviceLibraryIdentifier"].FirstOrDefault() ?? String.Empty;
-            string previousLastUpdated = req.Query["previousLastUpdated"].FirstOrDefault() ?? String.Empty;
+            string previousLastUpdated = req.Query["passesUpdatedSince"].FirstOrDefault() ?? String.Empty;
             _logger.LogError("C# HTTP trigger function processed a request for device library identifier " + deviceLibraryIdentifier);
             var passesUpdatedSince = GetPassesUpdatedSince(deviceLibraryIdentifier, previousLastUpdated);
             return new OkObjectResult(passesUpdatedSince);
