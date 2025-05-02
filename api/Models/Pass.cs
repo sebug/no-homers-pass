@@ -16,5 +16,4 @@ string authenticationToken,
 string webServiceURL,
 int formatVersion = 1)
 {
-    
 }

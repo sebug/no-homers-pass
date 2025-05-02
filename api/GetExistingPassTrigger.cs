@@ -49,12 +49,9 @@ namespace Sebug.Function
                 return new UnauthorizedObjectResult("Not authorized");
             }
 
-            if (entry != null)
-            {
-                return new OkObjectResult(entry);
-            }
+            var pass = passStorageProvider.MapTableEntityToPass(entry);
 
-            return new OkObjectResult("Welcome to Azure Functions!");
+            return new OkObjectResult(entry);
         }
     }
 }
