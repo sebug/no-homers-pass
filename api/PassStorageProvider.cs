@@ -32,7 +32,7 @@ public record PassStorageProvider(string StorageAccountAccessKey,
     public TableEntity? GetPassBySerialNumber(string serialNumber)
     {
         var tableClient = GetTableClient("passes");
-        var response = tableClient.GetEntity<TableEntity>("prod", serialNumber);
+        var response = tableClient.GetEntityIfExists<TableEntity>("prod", serialNumber);
         if (response == null)
         {
             return null;
