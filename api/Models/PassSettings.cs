@@ -5,7 +5,8 @@ public record PassSettings(string PassTypeIdentifier,
     string TeamIdentifier,
     string APIManagementBaseURL,
     string PrivateKeyPassword,
-    byte[] PrivateKeyBytes)
+    byte[] PrivateKeyBytes,
+    string APNSUrl)
 {
     public static PassSettings GetFromEnvironment()
     {
@@ -28,11 +29,15 @@ public record PassSettings(string PassTypeIdentifier,
         throw new Exception("PRIVATE_KEY environment variable not defined");
         var privateKeyBytes = Convert.FromBase64String(privateKeyBase64);
 
+        string apnsUrl = Environment.GetEnvironmentVariable("APNS_URL") ??
+        throw new Exception("APNS_URL environment variable not defined");
+
         return new PassSettings(PassTypeIdentifier: passTypeIdentifier,
         PassDescription: passDescription,
         TeamIdentifier: teamIdentifier,
         APIManagementBaseURL: apiManagementBaseURL,
         PrivateKeyPassword: privateKeyPassword,
-        PrivateKeyBytes: privateKeyBytes);
+        PrivateKeyBytes: privateKeyBytes,
+        APNSUrl: apnsUrl);
     }
 }

@@ -1,8 +1,10 @@
+using System.Text;
 using Azure.Data.Tables;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Logging;
+using Sebug.Function.Models;
 
 namespace Sebug.Function
 {
@@ -16,7 +18,7 @@ namespace Sebug.Function
         }
 
         [Function("NotifyAboutPassUpdatesTrigger")]
-        public IActionResult Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", "post")] HttpRequest req)
+        public async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", "post")] HttpRequest req)
         {
             string deviceLibraryIdentifier = req.Form["device_library_identifier"].FirstOrDefault() ?? String.Empty;
             if (String.IsNullOrEmpty(deviceLibraryIdentifier))
@@ -35,7 +37,32 @@ namespace Sebug.Function
             string pushToken = device.Value["PushToken"].ToString()!;
 
             _logger.LogInformation("Starting notification.");
-            return new OkObjectResult("Notified push token " + pushToken);
+
+            var settings = PassSettings.GetFromEnvironment();
+
+            var certificate = System.Security.Cryptography.X509Certificates.X509CertificateLoader.LoadPkcs12(settings.PrivateKeyBytes,
+            settings.PrivateKeyPassword);
+
+            var clientHandler = new HttpClientHandler();
+            clientHandler.ClientCertificates.Add(certificate);
+            clientHandler.ClientCertificateOptions = ClientCertificateOption.Manual;
+            using (var client = new HttpClient(clientHandler))
+            {
+                client.BaseAddress = new Uri(settings.APNSUrl);
+                var payload = new StringContent("{}", Encoding.UTF8, "application/json"); // empty object as per spec
+                payload.Headers.Add(":method", "POST");
+                payload.Headers.Add(":path", "/3/device/" + deviceLibraryIdentifier);
+                payload.Headers.Add("apns-push-type", "alert");
+                payload.Headers.Add("apns-topic", settings.PassTypeIdentifier);
+
+                var response = await client.PostAsync("/3/device/" + deviceLibraryIdentifier, payload);
+                string responseString = await response.Content.ReadAsStringAsync();
+                if (!response.IsSuccessStatusCode)
+                {
+                    return new BadRequestObjectResult(responseString);
+                }
+                return new OkObjectResult(responseString);
+            }
         }
     }
 }
