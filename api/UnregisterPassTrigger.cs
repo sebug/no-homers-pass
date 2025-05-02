@@ -59,7 +59,8 @@ namespace Sebug.Function
             var mapping = deviceToPassTableClient.GetEntityIfExists<TableEntity>("prod", deviceLibraryIdentifier + "_" + serialNumber);
             if (mapping != null && mapping.HasValue)
             {
-                return new OkObjectResult(mapping);
+                deviceToPassTableClient.DeleteEntity(mapping.Value);
+                return new OkObjectResult("Device Unregistered");
             }
 
             return new NoContentResult();
