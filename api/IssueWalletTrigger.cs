@@ -102,19 +102,8 @@ namespace Sebug.Function
 
         private void InsertPassInformation(Pass pass)
         {
-            string saAccessKey = Environment.GetEnvironmentVariable("SA_ACCESS_KEY") ??
-                throw new Exception("SA_ACCESS_KEY environment variable not defined");
 
-            string saAccountName = Environment.GetEnvironmentVariable("SA_ACCOUNT_NAME") ??
-                throw new Exception("SA_ACCOUNT_NAME environment variable not defined");
-
-            string saStorageUri = Environment.GetEnvironmentVariable("SA_STORAGE_URI") ??
-                throw new Exception("SA_STORAGE_URI environment variable not defined");
-
-            var tableClient = new TableClient(new Uri(saStorageUri),
-                "passes",
-                new TableSharedKeyCredential(saAccountName, saAccessKey));
-
+            var tableClient = PassStorageProvider.GetFromEnvironment().GetTableClient("passes");
             tableClient.CreateIfNotExists();
 
             var passEntity = new TableEntity("prod", pass.serialNumber)

@@ -59,21 +59,9 @@ namespace Sebug.Function
             string? serialNumber,
             string? authToken)
         {
+            var passStorageProvider = PassStorageProvider.GetFromEnvironment();
 
-
-            string saAccessKey = Environment.GetEnvironmentVariable("SA_ACCESS_KEY") ??
-                throw new Exception("SA_ACCESS_KEY environment variable not defined");
-
-            string saAccountName = Environment.GetEnvironmentVariable("SA_ACCOUNT_NAME") ??
-                throw new Exception("SA_ACCOUNT_NAME environment variable not defined");
-
-            string saStorageUri = Environment.GetEnvironmentVariable("SA_STORAGE_URI") ??
-                throw new Exception("SA_STORAGE_URI environment variable not defined");
-
-            var deviceLibrariesTableClient = new TableClient(new Uri(saStorageUri),
-                "deviceLibraries",
-                new TableSharedKeyCredential(saAccountName, saAccessKey));
-
+            var deviceLibrariesTableClient = passStorageProvider.GetTableClient("deviceLibraries");
             deviceLibrariesTableClient.CreateIfNotExists();
 
             var deviceLibaryEntity = new TableEntity("prod", deviceLibraryIdentifier)
@@ -81,9 +69,7 @@ namespace Sebug.Function
             };
             deviceLibrariesTableClient.UpsertEntity(deviceLibaryEntity);
 
-            var passMappingTableClient = new TableClient(new Uri(saStorageUri),
-            "deviceToPass",
-            new TableSharedKeyCredential(saAccountName, saAccessKey));
+            var passMappingTableClient = passStorageProvider.GetTableClient("deviceToPass");
             passMappingTableClient.CreateIfNotExists();
 
             var passMappingEntity = new TableEntity("prod",
