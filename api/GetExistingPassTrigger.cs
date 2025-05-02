@@ -39,6 +39,16 @@ namespace Sebug.Function
 
             var entry = passStorageProvider.GetPassBySerialNumber(serialNumber);
 
+            if (entry == null)
+            {
+                return new NotFoundObjectResult("Did not find pass with serial number " + serialNumber);
+            }
+
+            if (entry["AccessKey"] == null || entry["AccessKey"].ToString() != authToken)
+            {
+                return new UnauthorizedObjectResult("Not authorized");
+            }
+
             if (entry != null)
             {
                 return new OkObjectResult(entry);
