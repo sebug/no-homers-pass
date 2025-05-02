@@ -39,6 +39,11 @@ namespace Sebug.Function
             var searchResults = deviceToPassTableClient.Query<TableEntity>(filter: "DeviceLibraryIdentifier eq '" +
                 deviceLibraryIdentifier.Replace("'", String.Empty) + "'");
             var result = new List<TableEntity>();
+            DateTime? referenceDate = null;
+            if (!String.IsNullOrWhiteSpace(previousLastUpdated) && DateTime.TryParse(previousLastUpdated, out var dt))
+            {
+                referenceDate = dt;
+            }
             if (searchResults != null)
             {
                 var passesTableClient = passStorageProvider.GetTableClient("passes");
