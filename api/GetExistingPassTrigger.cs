@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Logging;
+using Sebug.Function.Models;
 
 namespace Sebug.Function
 {
@@ -16,7 +17,7 @@ namespace Sebug.Function
         }
 
         [Function("GetExistingPassTrigger")]
-        public IActionResult Run([HttpTrigger(AuthorizationLevel.Anonymous, "get")] HttpRequest req)
+        public async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get")] HttpRequest req)
         {
             _logger.LogInformation("Got request to get existing pass");
             string? authToken = null;
@@ -51,7 +52,15 @@ namespace Sebug.Function
 
             var pass = passStorageProvider.MapTableEntityToPass(entry);
 
-            return new OkObjectResult(pass);
+            var settings = PassSettings.GetFromEnvironment();
+
+            var passContentBytes = await new PkPassFileGenerator(pass).Generate(settings.PrivateKeyBytes, settings.PrivateKeyPassword);
+        
+            return new FileContentResult(passContentBytes,
+            "application/zip")
+            {
+                FileDownloadName = "pass.pkpass"
+            };
         }
     }
 }

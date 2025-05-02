@@ -40,7 +40,7 @@ public record PassStorageProvider(string StorageAccountAccessKey,
         return response.Value;
     }
 
-    public Pass? MapTableEntityToPass(TableEntity entity)
+    public Pass MapTableEntityToPass(TableEntity entity)
     {
         var settings = PassSettings.GetFromEnvironment();
         var eventTicket = new EventTicket(headerFields: new List<Field> { new Field (
@@ -49,33 +49,33 @@ public record PassStorageProvider(string StorageAccountAccessKey,
                 value : entity["EventName"]?.ToString() ?? String.Empty
             )
             },
-                primaryFields: new List<Field> { new Field (
-                    key : "nameOnBadge",
-                    label : "Name",
-                    value : entity["NameOnBadge"]?.ToString() ?? String.Empty
+            primaryFields: new List<Field> { new Field (
+                key : "nameOnBadge",
+                label : "Name",
+                value : entity["NameOnBadge"]?.ToString() ?? String.Empty
+            )
+            },
+            secondaryFields: [],
+            auxiliaryFields: [],
+            backFields: new List<Field> {
+                new Field(
+                key : "fullName",
+                label : "Full Name",
+                value : entity["NameOnBadge"]?.ToString() ?? String.Empty
                 )
-                },
-                secondaryFields: [],
-                auxiliaryFields: [],
-                backFields: new List<Field> {
-                    new Field(
-                    key : "fullName",
-                    label : "Full Name",
-                    value : entity["NameOnBadge"]?.ToString() ?? String.Empty
-                    )
-            });
+        });
 
-            var barcode = new Barcode(entity.RowKey.Replace("-", ""),
-            "PKBarcodeFormatQR", entity.RowKey.Replace("-", ""), "utf-8");
-            var pass = new Pass("No Homers", settings.PassTypeIdentifier, settings.PassDescription, entity.RowKey,
-            settings.TeamIdentifier, entity["ExpirationDate"]?.ToString() ?? String.Empty, entity["RelevantDate"]?.ToString() ?? String.Empty,
-            eventTicket, barcode,
-            foregroundColor: entity["ForegroundColor"]?.ToString() ?? String.Empty,
-            backgroundColor: entity["BackgroundColor"]?.ToString() ?? String.Empty,
-            labelColor: entity["LabelColor"]?.ToString() ?? String.Empty,
-            authenticationToken: entity["AccessKey"]?.ToString() ?? String.Empty,
-            webServiceURL: settings.APIManagementBaseURL);
+        var barcode = new Barcode(entity.RowKey.Replace("-", ""),
+        "PKBarcodeFormatQR", entity.RowKey.Replace("-", ""), "utf-8");
+        var pass = new Pass("No Homers", settings.PassTypeIdentifier, settings.PassDescription, entity.RowKey,
+        settings.TeamIdentifier, entity["ExpirationDate"]?.ToString() ?? String.Empty, entity["RelevantDate"]?.ToString() ?? String.Empty,
+        eventTicket, barcode,
+        foregroundColor: entity["ForegroundColor"]?.ToString() ?? String.Empty,
+        backgroundColor: entity["BackgroundColor"]?.ToString() ?? String.Empty,
+        labelColor: entity["LabelColor"]?.ToString() ?? String.Empty,
+        authenticationToken: entity["AccessKey"]?.ToString() ?? String.Empty,
+        webServiceURL: settings.APIManagementBaseURL);
 
-            return pass;
+        return pass;
     }
 }
