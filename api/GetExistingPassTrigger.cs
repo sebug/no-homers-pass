@@ -51,7 +51,7 @@ namespace Sebug.Function
 
             var pass = passStorageProvider.MapTableEntityToPass(entry);
 
-            return new OkObjectResult(entry);
+            return new OkObjectResult(pass);
         }
     }
 }
