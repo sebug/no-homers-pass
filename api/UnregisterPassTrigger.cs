@@ -55,8 +55,6 @@ namespace Sebug.Function
                 return new UnauthorizedObjectResult("Request Not Authorized");
             }
             var deviceToPassTableClient = passStorageProvider.GetTableClient("deviceToPass");
-            var searchResults = deviceToPassTableClient.Query<TableEntity>(filter: "DeviceLibraryIdentifier eq '" +
-                deviceLibraryIdentifier.Replace("'", String.Empty) + "'");
 
             var mapping = deviceToPassTableClient.GetEntityIfExists<TableEntity>("prod", deviceLibraryIdentifier + "_" + serialNumber);
             if (mapping != null && mapping.HasValue)
