@@ -33,6 +33,7 @@ namespace Sebug.Function
             var device = deviceLibrariesTableClient.GetEntityIfExists<TableEntity>("prod", deviceLibraryIdentifier);
             if (device == null || !device.HasValue)
             {
+                _logger.LogError("Could not find device library identifier " + deviceLibraryIdentifier);
                 return new List<TableEntity>();
             }
             var deviceToPassTableClient = passStorageProvider.GetTableClient("deviceToPass");
