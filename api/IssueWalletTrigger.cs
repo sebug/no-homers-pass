@@ -36,9 +36,6 @@ namespace Sebug.Function
             string labelColorHex = req.Form["label_color"].FirstOrDefault() ?? "#000000";
             try
             {
-
-                var serviceClient = CreateTableServiceClient();
-
                 string serialNumber = Guid.NewGuid().ToString().ToUpper();
 
                 string accessKey = Guid.NewGuid().ToString().ToLower().Replace("-", String.Empty);
@@ -101,23 +98,6 @@ namespace Sebug.Function
             {
                 return new BadRequestObjectResult(ex.Message);
             }
-        }
-
-        private TableServiceClient CreateTableServiceClient()
-        {
-            string saAccessKey = Environment.GetEnvironmentVariable("SA_ACCESS_KEY") ??
-                throw new Exception("SA_ACCESS_KEY environment variable not defined");
-
-            string saAccountName = Environment.GetEnvironmentVariable("SA_ACCOUNT_NAME") ??
-                throw new Exception("SA_ACCOUNT_NAME environment variable not defined");
-
-            string saStorageUri = Environment.GetEnvironmentVariable("SA_STORAGE_URI") ??
-                throw new Exception("SA_STORAGE_URI environment variable not defined");
-
-            var serviceClient = new TableServiceClient(new Uri(saStorageUri),
-            new TableSharedKeyCredential(saAccountName, saAccessKey));
-
-            return serviceClient;
         }
 
         private void InsertPassInformation(Pass pass)
