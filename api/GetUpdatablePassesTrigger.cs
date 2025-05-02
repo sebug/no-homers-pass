@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Logging;
+using Sebug.Function.Models;
 
 namespace Sebug.Function
 {
@@ -23,10 +24,14 @@ namespace Sebug.Function
             string previousLastUpdated = req.Query["passesUpdatedSince"].FirstOrDefault() ?? String.Empty;
             _logger.LogError("C# HTTP trigger function processed a request for device library identifier " + deviceLibraryIdentifier);
             var passesUpdatedSince = GetPassesUpdatedSince(deviceLibraryIdentifier, previousLastUpdated);
+            if (passesUpdatedSince == null)
+            {
+                return new NoContentResult();
+            }
             return new OkObjectResult(passesUpdatedSince);
         }
 
-        private List<TableEntity> GetPassesUpdatedSince(string deviceLibraryIdentifier, string previousLastUpdated)
+        private SerialNumbers? GetPassesUpdatedSince(string deviceLibraryIdentifier, string previousLastUpdated)
         {
             var passStorageProvider = PassStorageProvider.GetFromEnvironment();
             var deviceLibrariesTableClient = passStorageProvider.GetTableClient("deviceLibraries");
@@ -34,7 +39,7 @@ namespace Sebug.Function
             if (device == null || !device.HasValue)
             {
                 _logger.LogError("Could not find device library identifier " + deviceLibraryIdentifier);
-                return new List<TableEntity>();
+                return null;
             }
             var deviceToPassTableClient = passStorageProvider.GetTableClient("deviceToPass");
             var searchResults = deviceToPassTableClient.Query<TableEntity>(filter: "DeviceLibraryIdentifier eq '" +
@@ -53,6 +58,7 @@ namespace Sebug.Function
             {
                 _logger.LogError("Found " + searchResults.Count() + " search results");
             }
+            DateTimeOffset? lastUpdated = referenceDate;
             if (searchResults != null)
             {
                 var passesTableClient = passStorageProvider.GetTableClient("passes");
@@ -65,15 +71,26 @@ namespace Sebug.Function
                         var pass = passesTableClient.GetEntityIfExists<TableEntity>("prod", serialNumber);
                         if (pass != null && pass.HasValue && pass.Value != null)
                         {
-                            if (!referenceDate.HasValue || !pass.Value.Timestamp.HasValue || pass.Value.Timestamp.Value > referenceDate)
+                            if (!referenceDate.HasValue || !pass.Value.Timestamp.HasValue || pass.Value.Timestamp.Value >= referenceDate)
                             {
+                                if (pass.Value.Timestamp.HasValue && (!lastUpdated.HasValue || pass.Value.Timestamp.Value > lastUpdated.Value))
+                                {
+                                    lastUpdated = pass.Value.Timestamp.Value;
+                                }
                                 result.Add(pass.Value);
                             }
                         }
                     }
                 }
             }
-            return result;
+            if (result.Any() && lastUpdated.HasValue)
+            {
+                return new SerialNumbers(
+                    result.Select(r => r.RowKey).ToList(),
+                    lastUpdated.Value.ToString("yyyy-MM-dd") + "T" + lastUpdated.Value.ToString("HH:mm")
+                );
+            }
+            return null;
         }
     }
 }
