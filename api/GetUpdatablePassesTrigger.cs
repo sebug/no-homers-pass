@@ -65,7 +65,7 @@ namespace Sebug.Function
                         var pass = passesTableClient.GetEntityIfExists<TableEntity>("prod", serialNumber);
                         if (pass != null && pass.HasValue && pass.Value != null)
                         {
-                            if (!pass.Value.Timestamp.HasValue || pass.Value.Timestamp.Value > referenceDate)
+                            if (!referenceDate.HasValue || !pass.Value.Timestamp.HasValue || pass.Value.Timestamp.Value > referenceDate)
                             {
                                 result.Add(pass.Value);
                             }
