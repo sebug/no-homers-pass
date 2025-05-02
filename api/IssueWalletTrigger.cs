@@ -53,8 +53,6 @@ namespace Sebug.Function
 
                 string accessKey = Guid.NewGuid().ToString().ToLower().Replace("-", String.Empty);
 
-                InsertPassInformation(serialNumber, accessKey);
-
                 string teamIdentifier = Environment.GetEnvironmentVariable("TEAM_IDENTIFIER") ??
                 throw new Exception("TEAM_IDENTIFIER environment variable not defined");
 
@@ -119,6 +117,8 @@ namespace Sebug.Function
                     passString);
 
                 pathsToHash.Add("pass.json");
+
+                InsertPassInformation(pass);
 
                 string currentDirectory = Directory.GetCurrentDirectory();
 
@@ -211,7 +211,7 @@ namespace Sebug.Function
             return serviceClient;
         }
 
-        private void InsertPassInformation(string serialNumber, string accessKey)
+        private void InsertPassInformation(Pass pass)
         {
             string saAccessKey = Environment.GetEnvironmentVariable("SA_ACCESS_KEY") ??
                 throw new Exception("SA_ACCESS_KEY environment variable not defined");
@@ -228,9 +228,17 @@ namespace Sebug.Function
 
             tableClient.CreateIfNotExists();
 
-            var passEntity = new TableEntity("prod", serialNumber)
+            var passEntity = new TableEntity("prod", pass.serialNumber)
             {
-                { "AccessKey", accessKey }
+                { "AccessKey", pass.authenticationToken },
+                { "ExpirationDate", pass.expirationDate },
+                { "RelevantDate", pass.relevantDate },
+                { "EventName", pass.eventTicket.headerFields.First(hf => hf.key == "event").value },
+                { "NameOnBadge", pass.eventTicket.primaryFields.First(hf => hf.key == "nameOnBadge").value },
+                { "BarCode", pass.barcode.message },
+                { "ForegroundColor", pass.foregroundColor },
+                { "BackgroundColor", pass.backgroundColor },
+                { "LabelColor", pass.labelColor }
             };
             tableClient.AddEntity(passEntity);
         }
