@@ -86,6 +86,7 @@ namespace Sebug.Function
 
             var deviceLibaryEntity = new TableEntity("prod", deviceLibraryIdentifier)
             {
+                { "PushToken", pushToken?.pushToken ?? String.Empty }
             };
             deviceLibrariesTableClient.UpsertEntity(deviceLibaryEntity);
 
@@ -98,8 +99,7 @@ namespace Sebug.Function
                 { "DeviceLibraryIdentifier", deviceLibraryIdentifier },
                 { "SerialNumber", serialNumber },
                 { "PassTypeIdentifier", passTypeIdentifier },
-                { "AuthToken", authToken ?? String.Empty },
-                { "PushToken", pushToken?.pushToken ?? String.Empty }
+                { "AuthToken", authToken ?? String.Empty }
             };
 
             passMappingTableClient.UpsertEntity(passMappingEntity);
