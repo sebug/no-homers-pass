@@ -21,8 +21,9 @@ namespace Sebug.Function
             string passTypeIdentifier = req.Query["passTypeIdentifier"].FirstOrDefault() ?? String.Empty;
             string deviceLibraryIdentifier = req.Query["deviceLibraryIdentifier"].FirstOrDefault() ?? String.Empty;
             string previousLastUpdated = req.Query["previousLastUpdated"].FirstOrDefault() ?? String.Empty;
-            _logger.LogInformation("C# HTTP trigger function processed a request.");
-            return new OkObjectResult("Welcome to Azure Functions!");
+            _logger.LogInformation("C# HTTP trigger function processed a request for device library identifier " + deviceLibraryIdentifier);
+            var passesUpdatedSince = GetPassesUpdatedSince(deviceLibraryIdentifier, previousLastUpdated);
+            return new OkObjectResult(passesUpdatedSince);
         }
 
         private List<TableEntity> GetPassesUpdatedSince(string deviceLibraryIdentifier, string previousLastUpdated)
@@ -40,9 +41,20 @@ namespace Sebug.Function
             var result = new List<TableEntity>();
             if (searchResults != null)
             {
+                var passesTableClient = passStorageProvider.GetTableClient("passes");
                 foreach (var deviceToPass in searchResults)
                 {
-                    
+                    int underscoreIdx = deviceToPass.RowKey.IndexOf('_');
+                    if (underscoreIdx >= 0)
+                    {
+                        var serialNumber = deviceToPass.RowKey.Substring(underscoreIdx + 1);
+                        var pass = passesTableClient.GetEntityIfExists<TableEntity>("prod", serialNumber);
+                        if (pass != null && pass.Value != null)
+                        {
+                            // TODO: filter by date
+                            result.Add(pass.Value);
+                        }
+                    }
                 }
             }
             return result;
