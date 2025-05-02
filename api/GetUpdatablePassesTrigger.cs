@@ -40,8 +40,8 @@ namespace Sebug.Function
             var searchResults = deviceToPassTableClient.Query<TableEntity>(filter: "DeviceLibraryIdentifier eq '" +
                 deviceLibraryIdentifier.Replace("'", String.Empty) + "'");
             var result = new List<TableEntity>();
-            DateTime? referenceDate = null;
-            if (!String.IsNullOrWhiteSpace(previousLastUpdated) && DateTime.TryParse(previousLastUpdated, out var dt))
+            DateTimeOffset? referenceDate = null;
+            if (!String.IsNullOrWhiteSpace(previousLastUpdated) && DateTimeOffset.TryParse(previousLastUpdated, out var dt))
             {
                 referenceDate = dt;
             }
@@ -65,8 +65,10 @@ namespace Sebug.Function
                         var pass = passesTableClient.GetEntityIfExists<TableEntity>("prod", serialNumber);
                         if (pass != null && pass.HasValue && pass.Value != null)
                         {
-                            // TODO: filter by date
-                            result.Add(pass.Value);
+                            if (!pass.Value.Timestamp.HasValue || pass.Value.Timestamp.Value > referenceDate)
+                            {
+                                result.Add(pass.Value);
+                            }
                         }
                     }
                 }
