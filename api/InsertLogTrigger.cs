@@ -1,7 +1,9 @@
+using System.Text.Json;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Logging;
+using Sebug.Function.Models;
 
 namespace Sebug.Function
 {
@@ -17,8 +19,17 @@ namespace Sebug.Function
         [Function("InsertLogTrigger")]
         public IActionResult Run([HttpTrigger(AuthorizationLevel.Anonymous, "post")] HttpRequest req)
         {
-            _logger.LogError("C# HTTP trigger function processed a request.");
-            return new OkObjectResult("Welcome to Azure Functions!");
+            var sr = new StreamReader(req.Body);
+            string logEntriesString = sr.ReadToEnd();
+            var logEntries = JsonSerializer.Deserialize<LogEntries>(logEntriesString);
+            if (logEntries != null && logEntries.logs != null)
+            {
+                foreach (var log in logEntries.logs)
+                {
+                    _logger.LogError("Log from Apple: " + log);
+                }
+            }
+            return new OkObjectResult("Log entries stored");
         }
     }
 }
