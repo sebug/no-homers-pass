@@ -55,7 +55,7 @@ namespace Sebug.Function
                 payload.Headers.Add("apns-push-type", "alert");
                 payload.Headers.Add("apns-topic", settings.PassTypeIdentifier);
 
-                var response = await client.PostAsync("/3/device/" + deviceLibraryIdentifier, payload);
+                var response = await client.PostAsync("/3/device/" + pushToken, payload);
                 string responseString = await response.Content.ReadAsStringAsync();
                 if (!response.IsSuccessStatusCode)
                 {
