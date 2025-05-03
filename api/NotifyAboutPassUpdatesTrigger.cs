@@ -59,9 +59,9 @@ namespace Sebug.Function
                 string responseString = await response.Content.ReadAsStringAsync();
                 if (!response.IsSuccessStatusCode)
                 {
-                    return new BadRequestObjectResult(responseString);
+                    return new BadRequestObjectResult("Response " + response.StatusCode + " - " + responseString);
                 }
-                return new OkObjectResult(responseString);
+                return new OkObjectResult("Response " + response.StatusCode + " - " responseString);
             }
         }
     }
