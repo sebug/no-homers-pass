@@ -19,6 +19,7 @@ namespace Sebug.Function
         [Function("InsertLogTrigger")]
         public IActionResult Run([HttpTrigger(AuthorizationLevel.Anonymous, "post")] HttpRequest req)
         {
+            _logger.LogError("Receiving logs");
             var sr = new StreamReader(req.Body);
             string logEntriesString = sr.ReadToEnd();
             var logEntries = JsonSerializer.Deserialize<LogEntries>(logEntriesString);
