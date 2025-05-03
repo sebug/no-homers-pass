@@ -61,7 +61,7 @@ namespace Sebug.Function
                 {
                     return new BadRequestObjectResult("Response " + response.StatusCode + " - " + responseString);
                 }
-                return new OkObjectResult("Response " + response.StatusCode + " - " responseString);
+                return new OkObjectResult("Response " + response.StatusCode + " - " + responseString);
             }
         }
     }
