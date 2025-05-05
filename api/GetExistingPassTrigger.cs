@@ -50,6 +50,12 @@ namespace Sebug.Function
                 return new UnauthorizedObjectResult("Not authorized");
             }
 
+            if (entry.ContainsKey("NameOnBadge") && entry["NameOnBadge"] != null &&
+            entry["NameOnBadge"].ToString()!.Contains("Homer", StringComparison.InvariantCultureIgnoreCase))
+            {
+                return new BadRequestObjectResult("The sign said no Homers!");
+            }
+
             var pass = passStorageProvider.MapTableEntityToPass(entry);
 
             var settings = PassSettings.GetFromEnvironment();
