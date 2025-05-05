@@ -53,6 +53,7 @@ namespace Sebug.Function
             if (entry.ContainsKey("NameOnBadge") && entry["NameOnBadge"] != null &&
             entry["NameOnBadge"].ToString()!.Contains("Homer", StringComparison.InvariantCultureIgnoreCase))
             {
+                _logger.LogError("Complaining that we do not allow Homers for " + entry["NameOnBadge"]);
                 return new BadRequestObjectResult("The sign said no Homers!");
             }
 
