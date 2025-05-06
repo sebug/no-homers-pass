@@ -96,6 +96,7 @@ namespace Sebug.Function
             }
             catch (Exception ex)
             {
+                _logger.LogError(exception: ex, ex.Message);
                 return new BadRequestObjectResult(ex.Message);
             }
         }
