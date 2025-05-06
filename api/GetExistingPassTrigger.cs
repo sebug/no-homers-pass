@@ -63,7 +63,7 @@ namespace Sebug.Function
 
             var passContentBytes = await new PkPassFileGenerator(pass).Generate(settings.PrivateKeyBytes, settings.PrivateKeyPassword);
         
-            var result = new FileContentResult(passContentBytes,
+            var result = new FileContentResultWithLastModified(passContentBytes,
             "application/zip")
             {
                 FileDownloadName = "pass.pkpass"
@@ -71,6 +71,35 @@ namespace Sebug.Function
             result.LastModified = entry.Timestamp;
 
             return result;
+        }
+    }
+
+    public class FileContentResultWithLastModified : FileContentResult
+    {
+        public FileContentResultWithLastModified(byte[] bytes, string contentType): base(bytes, contentType)
+        {
+
+        }
+
+        public override void ExecuteResult(ActionContext context)
+        {
+            base.ExecuteResult(context);
+            AddLastModified(context);
+        }
+
+        private void AddLastModified(ActionContext context)
+        {
+            if (LastModified.HasValue)
+            {
+                context.HttpContext.Response.Headers["Last-Modified"] =
+                LastModified.Value.UtcDateTime.ToString("ddd, dd MM yyyy hh:mm:ss") + " GMT";
+            }
+        }
+
+        public override async Task ExecuteResultAsync(ActionContext context)
+        {
+            await base.ExecuteResultAsync(context);
+            AddLastModified(context);
         }
     }
 }
