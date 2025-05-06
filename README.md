@@ -1,5 +1,9 @@
 # No Homers Pass - Using the Apple Wallet for NFC Passes
-We will do this as an Azure Functions app.
+Azure Static Web App (with Azure Functions and API Management) implementation of Apple Wallet.
+
+Demoes the different steps needed to provide the full Apple Wallet experience.
+
+In order to test the logging from the Apple Side, you can put in "Homer" as the first name, which will lead to a rejection when getting updated pass (because no Homers are allowed).
 
 ## Steps on the Azure Portal
 You'll need to set up the Azure Static Web App. Also, you'll have to create a storage account.
