@@ -63,11 +63,14 @@ namespace Sebug.Function
 
             var passContentBytes = await new PkPassFileGenerator(pass).Generate(settings.PrivateKeyBytes, settings.PrivateKeyPassword);
         
-            return new FileContentResult(passContentBytes,
+            var result = new FileContentResult(passContentBytes,
             "application/zip")
             {
                 FileDownloadName = "pass.pkpass"
             };
+            result.LastModified = entry.Timestamp;
+
+            return result;
         }
     }
 }
