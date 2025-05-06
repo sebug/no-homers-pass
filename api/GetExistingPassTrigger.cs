@@ -91,7 +91,7 @@ namespace Sebug.Function
         {
             if (LastModified.HasValue)
             {
-                context.HttpContext.Response.Headers["Last-Modified"] =
+                context.HttpContext.Response.Headers["X-Last-Modified"] =
                 LastModified.Value.UtcDateTime.ToString("ddd, dd MM yyyy hh:mm:ss") + " GMT";
             }
         }
