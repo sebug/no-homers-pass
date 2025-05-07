@@ -7,6 +7,10 @@ You can see it in action [here](https://nice-field-03dde2c03.4.azurestaticapps.n
 
 In order to test the logging from the Apple Side, you can put in "Homer" as the first name, which will lead to a rejection when getting updated pass (because no Homers are allowed).
 
+The Web Services for Apple Wallet require specific passes. Furthermore, Azure Functions inside Azure Static Web Apps filter out request
+and response headers (quite hard to find any information about that). My solution was to put Azure API Management in front that rewrites
+the URLs and headers. You can finde the definition in [apimanagement.bicep](apimanagement.bicep)
+
 ## Steps on the Azure Portal
 You'll need to set up the Azure Static Web App. Also, you'll have to create a storage account.
 
