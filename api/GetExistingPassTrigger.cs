@@ -92,7 +92,10 @@ namespace Sebug.Function
 
         public override async Task ExecuteResultAsync(ActionContext context)
         {
-            context.HttpContext.Response.Headers.Add("X-Custom-H1", "Custom header content");
+            if (LastModified.HasValue)
+            {
+                context.HttpContext.Response.Headers.Add("X-Custom-H1", LastModified.Value.UtcDateTime.ToString("ddd, dd MMM yyyy HH:mm:ss") + " GMT");
+            }
             await base.ExecuteResultAsync(context);
         }
     }
