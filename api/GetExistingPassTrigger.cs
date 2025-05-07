@@ -72,7 +72,7 @@ namespace Sebug.Function
 
             if (entry.Timestamp.HasValue)
             {
-                req.HttpContext.Response.Headers["Last-Modified"] = entry.Timestamp.Value.UtcDateTime.ToString("ddd, dd MM yyyy HH:mm:ss") + " GMT";
+                req.HttpContext.Response.Headers["Last-Modified"] = entry.Timestamp.Value.UtcDateTime.ToString("ddd, dd MMM yyyy HH:mm:ss") + " GMT";
             }
 
             return result;
