@@ -3,7 +3,11 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
 var host = new HostBuilder()
-    .ConfigureFunctionsWebApplication()
+    .ConfigureFunctionsWebApplication(workerApplication => {
+        workerApplication.UseWhen<LastModifiedHttpHeaderMiddleware>((context) => {
+            return context.FunctionDefinition.Name == "GetExistingPassTrigger";
+        });
+    })
     .ConfigureServices(services => {
         services.AddApplicationInsightsTelemetryWorkerService();
         services.ConfigureFunctionsApplicationInsights();
