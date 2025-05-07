@@ -74,8 +74,11 @@ namespace Sebug.Function
             {
                 req.HttpContext.Response.Headers["Last-Modified"] = entry.Timestamp.Value.UtcDateTime.ToString("ddd, dd MM yyyy hh:mm:ss") + " GMT";
             }
+            req.HttpContext.Response.Headers["Content-Type"] = "application/json";
 
-            return new OkObjectResult("Trying with ok object - " + entry.Timestamp);
+            var objectResult = new OkObjectResult("Trying with ok object - " + entry.Timestamp);
+
+            return objectResult;
         }
     }
 }
