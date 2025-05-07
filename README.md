@@ -3,6 +3,8 @@ Azure Static Web App (with Azure Functions and API Management) implementation of
 
 Demoes the different steps needed to provide the full Apple Wallet experience.
 
+You can see it in action [here](https://nice-field-03dde2c03.4.azurestaticapps.net).
+
 In order to test the logging from the Apple Side, you can put in "Homer" as the first name, which will lead to a rejection when getting updated pass (because no Homers are allowed).
 
 ## Steps on the Azure Portal
