@@ -75,7 +75,7 @@ namespace Sebug.Function
                 req.HttpContext.Response.Headers["Last-Modified"] = entry.Timestamp.Value.UtcDateTime.ToString("ddd, dd MM yyyy hh:mm:ss") + " GMT";
             }
 
-            return result;
+            return new OkObjectResult("Trying with ok object - " + entry.Timestamp);
         }
     }
 }
