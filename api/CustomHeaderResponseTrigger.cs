@@ -1,8 +1,6 @@
-using System.Net;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.Functions.Worker;
-using Microsoft.Azure.Functions.Worker.Http;
 using Microsoft.Extensions.Logging;
 
 namespace Sebug.Function
@@ -17,18 +15,23 @@ namespace Sebug.Function
         }
 
         [Function("CustomHeaderResponseTrigger")]
-        public async Task<HttpResponseData> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", "post")] HttpRequestData req,
-            FunctionContext executionContext)
+        public IActionResult Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", "post")] HttpRequest req)
         {
             _logger.LogInformation("C# HTTP trigger function processed a request.");
+            return new OkObjectWithAdditionalHeaderResult("Ok object with custom header");
+        }
+    }
 
-            var response = req.CreateResponse(HttpStatusCode.OK);
-            response.Headers.Add("Content-Type", "text/plain; charset=utf-8");
-            response.Headers.Add("Last-Modified", DateTimeOffset.Now.UtcDateTime.ToString("ddd, dd MMM yyyy HH:mm:ss") + " GMT");
-            await response.WriteStringAsync("Maybe custom header??" + DateTimeOffset.Now.UtcDateTime.ToString("ddd, dd MMM yyyy HH:mm:ss") + " GMT");
-            executionContext.GetHttpResponseData().Headers.Add("X-Very-Custom", "hey-hey");
-            
-            return response;
+    public class OkObjectWithAdditionalHeaderResult : OkObjectResult
+    {
+        public OkObjectWithAdditionalHeaderResult(object? value) : base(value)
+        {
+        }
+
+        public override async Task ExecuteResultAsync(ActionContext context)
+        {
+            context.HttpContext.Response.Headers.Add("X-Custom-H1", "Custom header content");
+            await base.ExecuteResultAsync(context);
         }
     }
 }
