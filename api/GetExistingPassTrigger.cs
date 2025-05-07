@@ -71,11 +71,6 @@ namespace Sebug.Function
             };
             result.LastModified = entry.Timestamp;
 
-            if (entry.Timestamp.HasValue)
-            {
-                req.HttpContext.Response.Headers["Last-Modified"] = entry.Timestamp.Value.UtcDateTime.ToString("ddd, dd MMM yyyy HH:mm:ss") + " GMT";
-            }
-
             return result;
         }
     }
@@ -94,7 +89,7 @@ namespace Sebug.Function
         {
             if (LastModified.HasValue)
             {
-                context.HttpContext.Response.Headers.Add("X-Custom-H1", LastModified.Value.UtcDateTime.ToString("ddd, dd MMM yyyy HH:mm:ss") + " GMT");
+                context.HttpContext.Response.Headers.Add("Last-Modified", LastModified.Value.UtcDateTime.ToString("ddd, dd MMM yyyy HH:mm:ss") + " GMT");
             }
             await base.ExecuteResultAsync(context);
         }
