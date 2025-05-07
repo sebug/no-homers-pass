@@ -92,6 +92,10 @@ namespace Sebug.Function
                 context.HttpContext.Response.Headers.LastModified = LastModified.Value.UtcDateTime.ToString("ddd, dd MMM yyyy HH:mm:ss") + " GMT";
             }
             await base.ExecuteResultAsync(context);
+            if (LastModified.HasValue)
+            {
+                context.HttpContext.Response.Headers.LastModified = LastModified.Value.UtcDateTime.ToString("ddd, dd MMM yyyy HH:mm:ss") + " GMT";
+            }
         }
     }
 }
