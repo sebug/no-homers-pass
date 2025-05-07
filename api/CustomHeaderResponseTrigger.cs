@@ -26,6 +26,8 @@ namespace Sebug.Function
             response.Headers.Add("Content-Type", "text/plain; charset=utf-8");
             response.Headers.Add("Last-Modified", DateTimeOffset.Now.UtcDateTime.ToString("ddd, dd MMM yyyy HH:mm:ss") + " GMT");
             await response.WriteStringAsync("Maybe custom header??" + DateTimeOffset.Now.UtcDateTime.ToString("ddd, dd MMM yyyy HH:mm:ss") + " GMT");
+            executionContext.GetHttpResponseData().Headers.Add("X-Very-Custom", "hey-hey");
+            
             return response;
         }
     }
