@@ -89,13 +89,9 @@ namespace Sebug.Function
         {
             if (LastModified.HasValue)
             {
-                context.HttpContext.Response.Headers.LastModified = LastModified.Value.UtcDateTime.ToString("ddd, dd MMM yyyy HH:mm:ss") + " GMT";
+                context.HttpContext.Response.Headers["Last-Modified"] = LastModified.Value.UtcDateTime.ToString("ddd, dd MMM yyyy HH:mm:ss") + " GMT";
             }
             await base.ExecuteResultAsync(context);
-            if (LastModified.HasValue)
-            {
-                context.HttpContext.Response.Headers.LastModified = LastModified.Value.UtcDateTime.ToString("ddd, dd MMM yyyy HH:mm:ss") + " GMT";
-            }
         }
     }
 }
