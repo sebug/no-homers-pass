@@ -24,7 +24,7 @@ namespace Sebug.Function
 
             var response = req.CreateResponse(HttpStatusCode.OK);
             response.Headers.Add("Content-Type", "text/plain; charset=utf-8");
-            response.Headers.Add("Last-Modified", "Tuesday");
+            response.Headers.Add("Last-Modified", DateTimeOffset.Now.UtcDateTime.ToString("ddd, dd MM yyyy hh:mm:ss") + " GMT");
             response.WriteString("Maybe custom header??");
             return response;
         }
