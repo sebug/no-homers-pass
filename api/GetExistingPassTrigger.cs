@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Logging;
+using Microsoft.Net.Http.Headers;
 using Sebug.Function.Models;
 
 namespace Sebug.Function
@@ -63,7 +64,7 @@ namespace Sebug.Function
 
             var passContentBytes = await new PkPassFileGenerator(pass).Generate(settings.PrivateKeyBytes, settings.PrivateKeyPassword);
         
-            var result = new FileContentResult(passContentBytes,
+            var result = new FileContentResultWithLastModifiedHeader(passContentBytes,
             "application/zip")
             {
                 FileDownloadName = "pass.pkpass"
@@ -76,6 +77,23 @@ namespace Sebug.Function
             }
 
             return result;
+        }
+    }
+
+    public class FileContentResultWithLastModifiedHeader : FileContentResult
+    {
+        public FileContentResultWithLastModifiedHeader(byte[] fileContents, string contentType) : base(fileContents, contentType)
+        {
+        }
+
+        public FileContentResultWithLastModifiedHeader(byte[] fileContents, MediaTypeHeaderValue contentType) : base(fileContents, contentType)
+        {
+        }
+
+        public override async Task ExecuteResultAsync(ActionContext context)
+        {
+            context.HttpContext.Response.Headers.Add("X-Custom-H1", "Custom header content");
+            await base.ExecuteResultAsync(context);
         }
     }
 }
