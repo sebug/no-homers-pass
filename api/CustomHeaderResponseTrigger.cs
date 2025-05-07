@@ -17,7 +17,7 @@ namespace Sebug.Function
         }
 
         [Function("CustomHeaderResponseTrigger")]
-        public HttpResponseData Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", "post")] HttpRequestData req,
+        public async Task<HttpResponseData> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", "post")] HttpRequestData req,
             FunctionContext executionContext)
         {
             _logger.LogInformation("C# HTTP trigger function processed a request.");
@@ -25,7 +25,7 @@ namespace Sebug.Function
             var response = req.CreateResponse(HttpStatusCode.OK);
             response.Headers.Add("Content-Type", "text/plain; charset=utf-8");
             response.Headers.Add("X-Last-Modified", DateTimeOffset.Now.UtcDateTime.ToString("ddd, dd MMM yyyy HH:mm:ss") + " GMT");
-            response.WriteString("Maybe custom header??" + DateTimeOffset.Now.UtcDateTime.ToString("ddd, dd MMM yyyy HH:mm:ss") + " GMT");
+            await response.WriteStringAsync("Maybe custom header??" + DateTimeOffset.Now.UtcDateTime.ToString("ddd, dd MMM yyyy HH:mm:ss") + " GMT");
             return response;
         }
     }
